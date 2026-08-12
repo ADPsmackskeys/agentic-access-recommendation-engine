@@ -14,7 +14,9 @@ from pydantic import Field, PostgresDsn, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 McpClientMode = Literal["inmemory", "stdio", "http", "direct"]
-LlmProvider = Literal["none", "anthropic", "openai"]
+# `google` covers the Gemini API, which serves both the Gemini and the Gemma
+# model families from one key and endpoint. `gemini` is accepted as an alias.
+LlmProvider = Literal["none", "anthropic", "openai", "google"]
 
 
 class Settings(BaseSettings):
@@ -112,6 +114,20 @@ class Settings(BaseSettings):
     @classmethod
     def _upper_statuses(cls, value: list[str]) -> list[str]:
         return [item.upper() for item in value]
+
+    @field_validator("llm_provider", mode="before")
+    @classmethod
+    def _normalise_provider(cls, value: object) -> object:
+        """Accept common spellings for the same provider.
+
+        `gemini` is what people type; `google` is what the SDK is. Both reach
+        the same API, so silently accepting either avoids a confusing
+        validation failure over a naming detail.
+        """
+        if isinstance(value, str):
+            alias = {"gemini": "google", "googleai": "google", "google-genai": "google"}
+            return alias.get(value.strip().lower(), value.strip().lower())
+        return value
 
     @model_validator(mode="after")
     def _validate_risk_bands(self) -> "Settings":

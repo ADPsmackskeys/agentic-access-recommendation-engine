@@ -1,0 +1,16 @@
+entitlement,application,risk_score,risk_category
+SAP_FIN_DISPLAY,SAP ECC,15,Low
+SAP_AP_INVOICE,SAP ECC,45,Medium
+POWERBI_FINANCE,PowerBI,10,Low
+FIN_SHAREPOINT,SharePoint,8,Low
+JIRA_USER,JIRA,5,Low
+GITHUB_DEV,GitHub,35,Medium
+CONFLUENCE_USER,Confluence,10,Low
+RSA_GRC,RSA Archer,70,High
+POWERBI_RISK,PowerBI,10,Low
+RISK_PORTAL,Risk Portal,40,Medium
+AUDIT_TOOL,Audit Platform,75,High
+POWERBI_AUDIT,PowerBI,10,Low
+SAP_PAYMENT_APPROVER,SAP ECC,95,Critical
+SAP_VENDOR_CREATE,SAP ECC,90,Critical
+AD_DOMAIN_ADMIN,Active Directory,100,Critical

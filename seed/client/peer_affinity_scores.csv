@@ -1,0 +1,14 @@
+job_role,department,entitlement,peer_count,total_peers,affinity_score
+Financial Analyst,Finance,SAP_FIN_DISPLAY,5,5,100
+Financial Analyst,Finance,SAP_AP_INVOICE,4,5,80
+Financial Analyst,Finance,POWERBI_FINANCE,5,5,100
+Financial Analyst,Finance,FIN_SHAREPOINT,1,5,20
+Software Engineer,Technology,JIRA_USER,3,3,100
+Software Engineer,Technology,GITHUB_DEV,3,3,100
+Software Engineer,Technology,CONFLUENCE_USER,2,3,67
+Risk Analyst,Risk,RSA_GRC,1,1,100
+Risk Analyst,Risk,POWERBI_RISK,1,1,100
+Risk Analyst,Risk,RISK_PORTAL,1,1,100
+Internal Auditor,Audit,AUDIT_TOOL,1,1,100
+Internal Auditor,Audit,POWERBI_AUDIT,1,1,100
+Internal Auditor,Audit,SHAREPOINT_AUDIT,1,1,100

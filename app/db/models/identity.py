@@ -52,6 +52,10 @@ class Entitlement(Base):
 
     entitlement_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     entitlement_name: Mapped[str] = mapped_column(String(200), nullable=False)
+    # Source-system key (e.g. SailPoint catalogue id `ENT001`). Kept for
+    # traceability only: the client's extracts join on the entitlement *name*,
+    # not this id, so the name is the primary key here.
+    external_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     application: Mapped[str] = mapped_column(String(128), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     owner: Mapped[str | None] = mapped_column(String(128), nullable=True)

@@ -1,0 +1,11 @@
+entitlement_id,entitlement_name,application,owner
+ENT001,SAP_FIN_DISPLAY,SAP ECC,Finance IT
+ENT002,SAP_AP_INVOICE,SAP ECC,Finance IT
+ENT003,POWERBI_FINANCE,PowerBI,BI Team
+ENT004,FIN_SHAREPOINT,SharePoint,Collaboration Team
+ENT005,JIRA_USER,JIRA,Engineering IT
+ENT006,GITHUB_DEV,GitHub,DevOps Team
+ENT007,CONFLUENCE_USER,Confluence,Engineering IT
+ENT008,RSA_GRC,RSA Archer,Risk IT
+ENT009,RISK_PORTAL,Risk Portal,Risk IT
+ENT010,AUDIT_TOOL,Audit Platform,Audit IT

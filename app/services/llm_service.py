@@ -83,6 +83,16 @@ class LangChainLLMService(LLMService):
     def available(self) -> bool:
         return self.settings.llm_enabled
 
+    @property
+    def supports_system_messages(self) -> bool:
+        """Whether the selected model accepts a separate system role.
+
+        Gemma models served through the Gemini API do not: they reject the
+        system role outright. Detecting it from the model id keeps the caller
+        from having to know, and costs a failed request to discover otherwise.
+        """
+        return "gemma" not in (self.settings.llm_model or "").lower()
+
     def _build_client(self) -> Any:
         if self._client is not None:
             return self._client
@@ -111,6 +121,19 @@ class LangChainLLMService(LLMService):
                     max_tokens=self.settings.llm_max_tokens,
                     timeout=self.settings.llm_timeout_seconds,
                 )
+            elif provider == "google":
+                from langchain_google_genai import ChatGoogleGenerativeAI
+
+                # The Gemini API serves both Gemini and Gemma models; which one
+                # is used is entirely a matter of LLM_MODEL. Note the parameter
+                # is `max_output_tokens` here, not `max_tokens`.
+                self._client = ChatGoogleGenerativeAI(
+                    model=self.settings.llm_model,
+                    google_api_key=self.settings.llm_api_key,
+                    temperature=self.settings.llm_temperature,
+                    max_output_tokens=self.settings.llm_max_tokens,
+                    timeout=self.settings.llm_timeout_seconds,
+                )
             else:
                 raise LlmError(f"Unsupported LLM provider '{provider}'.")
         except ImportError as exc:
@@ -131,16 +154,21 @@ class LangChainLLMService(LLMService):
 
         client = self._build_client()
         payload = json.dumps(evidence, indent=2, default=str)
-        messages = [
-            SystemMessage(content=system_prompt),
-            HumanMessage(
-                content=(
-                    "Write the explanation for the following access-governance evidence. "
-                    "Use only the facts present in this JSON.\n\n"
-                    f"```json\n{payload}\n```"
-                )
-            ),
-        ]
+        instruction = (
+            "Write the explanation for the following access-governance evidence. "
+            "Use only the facts present in this JSON.\n\n"
+            f"```json\n{payload}\n```"
+        )
+
+        if self.supports_system_messages:
+            messages: list[Any] = [
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=instruction),
+            ]
+        else:
+            # Gemma models served through the Gemini API reject the system role,
+            # so the instructions are folded into the single user turn.
+            messages = [HumanMessage(content=f"{system_prompt}\n\n---\n\n{instruction}")]
         try:
             response = client.invoke(messages)
         except Exception as exc:

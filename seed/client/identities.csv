@@ -1,0 +1,11 @@
+employee_id,name,department,job_role,job_level,location,entitlements
+EMP001,Ramesh,Finance,Financial Analyst,L2,Bangalore,"SAP_FIN_DISPLAY;SAP_AP_INVOICE;POWERBI_FINANCE"
+EMP002,Sneha,Finance,Financial Analyst,L2,Bangalore,"SAP_FIN_DISPLAY;SAP_AP_INVOICE;POWERBI_FINANCE"
+EMP003,Ajay,Finance,Financial Analyst,L2,Bangalore,"SAP_FIN_DISPLAY;POWERBI_FINANCE"
+EMP004,Manoj,Finance,Financial Analyst,L2,Bangalore,"SAP_FIN_DISPLAY;SAP_AP_INVOICE;POWERBI_FINANCE"
+EMP005,Pooja,Finance,Financial Analyst,L2,Bangalore,"SAP_FIN_DISPLAY;SAP_AP_INVOICE;POWERBI_FINANCE;FIN_SHAREPOINT"
+EMP006,Ravi,Technology,Software Engineer,L2,Bangalore,"JIRA_USER;GITHUB_DEV;CONFLUENCE_USER"
+EMP007,Sonia,Technology,Software Engineer,L2,Bangalore,"JIRA_USER;GITHUB_DEV;CONFLUENCE_USER"
+EMP008,Akash,Technology,Software Engineer,L2,Bangalore,"JIRA_USER;GITHUB_DEV"
+EMP009,Meera,Risk,Risk Analyst,L3,Bangalore,"RSA_GRC;POWERBI_RISK;RISK_PORTAL"
+EMP010,John,Audit,Internal Auditor,L3,Mumbai,"AUDIT_TOOL;POWERBI_AUDIT;SHAREPOINT_AUDIT"

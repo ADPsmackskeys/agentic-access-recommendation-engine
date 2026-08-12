@@ -1,0 +1,8 @@
+policy_id,policy_name,type,rule
+POL001,Finance Birthright,ALLOW,"Financial Analyst -> SAP_FIN_DISPLAY"
+POL002,Finance Birthright,ALLOW,"Financial Analyst -> POWERBI_FINANCE"
+POL003,Engineering Birthright,ALLOW,"Software Engineer -> JIRA_USER"
+POL004,Engineering Birthright,ALLOW,"Software Engineer -> GITHUB_DEV"
+POL005,Risk Review,HUMAN_APPROVAL,"risk_score >= 70"
+POL006,Critical Access,HUMAN_APPROVAL,"risk_score >= 90"
+POL007,Affinity Threshold,ALLOW,"affinity_score >= 70"

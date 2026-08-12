@@ -1,0 +1,11 @@
+employee_id,name,department,job_role,job_level,location,manager_id,cost_center,start_date
+NJ1001,Rahul Sharma,Finance,Financial Analyst,L2,Bangalore,MGR100,FIN001,2026-08-01
+NJ1002,Priya Nair,Finance,Financial Analyst,L2,Bangalore,MGR100,FIN001,2026-08-01
+NJ1003,Amit Gupta,Finance,Financial Analyst,L2,Hyderabad,MGR100,FIN001,2026-08-01
+NJ1004,Anjali Rao,Technology,Software Engineer,L2,Bangalore,MGR200,TECH001,2026-08-01
+NJ1005,Karan Mehta,Technology,Software Engineer,L2,Pune,MGR200,TECH001,2026-08-01
+NJ1006,Neha Singh,Risk,Risk Analyst,L3,Bangalore,MGR300,RISK001,2026-08-01
+NJ1007,Suresh Iyer,Audit,Internal Auditor,L3,Mumbai,MGR400,AUD001,2026-08-01
+NJ1008,Deepa Joseph,HR,HR Specialist,L2,Bangalore,MGR500,HR001,2026-08-01
+NJ1009,Vivek Kumar,Technology,Cloud Engineer,L3,Hyderabad,MGR200,TECH001,2026-08-01
+NJ1010,Arjun Patel,Finance,Senior Financial Analyst,L3,Bangalore,MGR100,FIN001,2026-08-01

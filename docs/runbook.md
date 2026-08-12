@@ -453,6 +453,54 @@ Run `--reset` before a demo so the dashboard numbers start clean.
 | Integration tests skip | Test DB unreachable | Check port-forward; `newjoiner_test` must exist |
 | Uvicorn `exit code 3` | Port already in use | `pkill -f "uvicorn app.main"` or use another port |
 | Logs interleave with demo output | Logging enabled | Add `--quiet` |
+| `/mcp` in a browser → `-32600 Not Acceptable: Client must accept text/event-stream` | **Not a fault.** See below | Use an MCP client, not a browser |
+
+### `/mcp` is not browsable
+
+Opening `http://localhost:8000/mcp` in a browser returns HTTP 406 and:
+
+```json
+{"jsonrpc":"2.0","id":"server-error",
+ "error":{"code":-32600,"message":"Not Acceptable: Client must accept text/event-stream"}}
+```
+
+This is the MCP Streamable HTTP transport behaving correctly. The endpoint
+speaks JSON-RPC over `POST` and replies as a Server-Sent Events stream, so the
+spec requires the client to send:
+
+```
+Accept: application/json, text/event-stream
+```
+
+A browser sends `Accept: text/html,...`, so the server correctly refuses. There
+is nothing to fix — the endpoint is for MCP clients, not for reading.
+
+To check it is alive, send a real handshake:
+
+```bash
+curl -s -X POST http://localhost:8000/mcp/ \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{
+       "protocolVersion":"2025-06-18","capabilities":{},
+       "clientInfo":{"name":"curl","version":"1"}}}'
+```
+
+A healthy server replies `event: message` with its `serverInfo` and
+capabilities. Easier still, use the client:
+
+```bash
+.venv/bin/python -c "
+import asyncio
+from fastmcp import Client
+async def main():
+    async with Client('http://localhost:8000/mcp/') as c:
+        print([t.name for t in await c.list_tools()])
+asyncio.run(main())"
+```
+
+The human-readable surface is `/docs` (Swagger). `/mcp` has no browser UI by
+design.
 
 Health check tells you most of it in one line:
 
