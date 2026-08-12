@@ -1,0 +1,93 @@
+# ---------------------------------------------------------------------------
+# Local development stack.
+#
+# This file is for local work only. In production the database is the
+# Space-Cloud PostgreSQL add-on and this compose file is not used - see
+# docs/space-cloud-deployment.md. The application is identical in both cases;
+# only POSTGRES_* / DATABASE_URL differ.
+# ---------------------------------------------------------------------------
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: newjoiner-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-newjoiner}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-newjoiner}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot: migrate the schema, then load the seed corpus.
+  migrate:
+    build: .
+    container_name: newjoiner-migrate
+    command: ["migrate"]
+    environment: &db_env
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-newjoiner}
+      POSTGRES_SSLMODE: disable
+      DEMO_MODE: ${DEMO_MODE:-true}
+      LLM_PROVIDER: ${LLM_PROVIDER:-none}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      MCP_CLIENT_MODE: ${MCP_CLIENT_MODE:-inmemory}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LOG_JSON: ${LOG_JSON:-true}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  seed:
+    build: .
+    container_name: newjoiner-seed
+    command: ["seed"]
+    environment: *db_env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+
+  api:
+    build: .
+    container_name: newjoiner-api
+    command: ["api"]
+    environment: *db_env
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  # Optional: the MCP server on its own Streamable-HTTP port. The API already
+  # serves MCP at /mcp, so this is only needed to run it as a separate process.
+  mcp:
+    build: .
+    container_name: newjoiner-mcp
+    command: ["mcp"]
+    environment:
+      <<: *db_env
+      MCP_TRANSPORT: http
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: "8081"
+    ports:
+      - "${MCP_PORT:-8081}:8081"
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    profiles: ["mcp"]
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

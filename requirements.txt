@@ -1,0 +1,27 @@
+# Agentic Access Recommendation Engine - runtime dependencies
+# Python 3.12+
+
+# --- Web / API ---
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.32,<1.0
+
+# --- Configuration / validation ---
+pydantic>=2.9,<3.0
+pydantic-settings>=2.6,<3.0
+
+# --- Database (PostgreSQL only - no SQLite fallback) ---
+SQLAlchemy>=2.0.36,<2.1
+alembic>=1.14
+psycopg[binary]>=3.2,<4.0
+
+# --- Agent / AI ---
+langgraph>=0.2
+langchain>=0.3
+langchain-core>=0.3
+
+# --- MCP ---
+mcp>=1.2
+fastmcp>=2.0
+
+# --- Observability ---
+structlog>=24.4

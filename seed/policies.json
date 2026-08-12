@@ -1,0 +1,127 @@
+[
+  {
+    "policy_id": "POL-001",
+    "policy_name": "Finance Vendor and Payment Segregation",
+    "description": "An identity must not hold both vendor maintenance and payment approval in accounts payable.",
+    "policy_type": "MUTUALLY_EXCLUSIVE_ENTITLEMENTS",
+    "rule_definition": {
+      "entitlements": [
+        "SAP_AP_CREATE_VENDOR",
+        "SAP_AP_APPROVE_PAYMENT"
+      ],
+      "effect": "BLOCK",
+      "message": "Vendor maintenance and payment approval must not be held by the same identity."
+    },
+    "enabled": true
+  },
+  {
+    "policy_id": "POL-002",
+    "policy_name": "Privileged Access Manager Approval",
+    "description": "Entitlements scoring 70 or above are privileged and require line-manager approval.",
+    "policy_type": "RISK_THRESHOLD_APPROVAL",
+    "rule_definition": {
+      "min_risk_score": 70,
+      "approval_tier": "MANAGER",
+      "message": "Privileged entitlement requires line-manager approval."
+    },
+    "enabled": true
+  },
+  {
+    "policy_id": "POL-003",
+    "policy_name": "Critical Access Human Review",
+    "description": "Entitlements scoring 90 or above require review by the access governance team.",
+    "policy_type": "RISK_THRESHOLD_APPROVAL",
+    "rule_definition": {
+      "min_risk_score": 90,
+      "approval_tier": "HUMAN_REVIEW",
+      "message": "Critical entitlement requires access governance review."
+    },
+    "enabled": true
+  },
+  {
+    "policy_id": "POL-004",
+    "policy_name": "Contractor Sensitive Access Restriction",
+    "description": "Contractors may not receive entitlements scoring 70 or above.",
+    "policy_type": "EMPLOYMENT_TYPE_RESTRICTION",
+    "rule_definition": {
+      "employment_types": [
+        "CONTRACTOR"
+      ],
+      "min_risk_score": 70,
+      "effect": "DENY",
+      "message": "Contractors are not eligible for privileged or sensitive entitlements."
+    },
+    "enabled": true
+  },
+  {
+    "policy_id": "POL-005",
+    "policy_name": "Personal Data Residency Restriction",
+    "description": "Entitlements exposing personal data may only be granted in approved processing locations.",
+    "policy_type": "LOCATION_RESTRICTION",
+    "rule_definition": {
+      "entitlements": [
+        "SNOWFLAKE_PII_READ",
+        "WORKDAY_COMP_VIEW"
+      ],
+      "allowed_locations": [
+        "London",
+        "Frankfurt",
+        "New York"
+      ],
+      "effect": "BLOCK",
+      "message": "Personal data access is restricted to approved processing locations."
+    },
+    "enabled": true
+  },
+  {
+    "policy_id": "POL-006",
+    "policy_name": "Period Close Seniority Requirement",
+    "description": "Ledger close and journal approval require job level L4 or above.",
+    "policy_type": "JOB_LEVEL_RESTRICTION",
+    "rule_definition": {
+      "entitlements": [
+        "SAP_GL_CLOSE_PERIOD",
+        "ORACLE_ERP_JOURNAL_APPROVE"
+      ],
+      "min_job_level": "L4",
+      "effect": "BLOCK",
+      "message": "Ledger close and journal approval require seniority of L4 or above."
+    },
+    "enabled": true
+  },
+  {
+    "policy_id": "POL-007",
+    "policy_name": "Workforce Data Department Restriction",
+    "description": "Workforce administration and compensation data are restricted to Human Resources.",
+    "policy_type": "DEPARTMENT_RESTRICTION",
+    "rule_definition": {
+      "entitlements": [
+        "WORKDAY_HR_ADMIN",
+        "WORKDAY_COMP_VIEW"
+      ],
+      "allowed_departments": [
+        "Human Resources"
+      ],
+      "effect": "BLOCK",
+      "message": "Workforce data entitlements are restricted to the Human Resources department."
+    },
+    "enabled": true
+  },
+  {
+    "policy_id": "POL-008",
+    "policy_name": "Retired CRM Departmental Restriction",
+    "description": "Superseded control retained for audit history. Disabled, and must never be evaluated.",
+    "policy_type": "DEPARTMENT_RESTRICTION",
+    "rule_definition": {
+      "entitlements": [
+        "SALESFORCE_CRM_READ"
+      ],
+      "allowed_departments": [
+        "Sales"
+      ],
+      "effect": "BLOCK",
+      "message": "Retired control - superseded by the CRM access standard."
+    },
+    "enabled": false
+  }
+]

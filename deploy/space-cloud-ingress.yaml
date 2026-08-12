@@ -1,0 +1,28 @@
+# ---------------------------------------------------------------------------
+# Space Cloud ingress route: expose the API through the Space Cloud gateway.
+#
+#   space-cli apply -f deploy/space-cloud-ingress.yaml --project newjoiner
+#
+# The rule below forwards everything to the service. Tighten `url` to
+# `/api/v1` if the MCP endpoint should not be publicly reachable.
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: ingress-route
+meta:
+  projectId: newjoiner
+  id: newjoiner-api-route
+spec:
+  source:
+    hosts:
+      - "*"
+    url: /
+    rewrite: ""
+    type: prefix
+  targets:
+    - type: version
+      version: v1
+      host: newjoiner-api.newjoiner.svc.cluster.local
+      port: 8000
+      weight: 100
+  rule:
+    rule: allow

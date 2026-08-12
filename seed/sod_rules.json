@@ -1,0 +1,74 @@
+[
+  {
+    "sod_id": "SOD-001",
+    "name": "Vendor Maintenance vs Payment Approval",
+    "entitlement_1": "SAP_AP_CREATE_VENDOR",
+    "entitlement_2": "SAP_AP_APPROVE_PAYMENT",
+    "severity": "CRITICAL",
+    "description": "The identity would be able to create a fictitious vendor and approve payments to it.",
+    "enabled": true
+  },
+  {
+    "sod_id": "SOD-002",
+    "name": "Journal Posting vs Period Close",
+    "entitlement_1": "SAP_FIN_POST_JOURNAL",
+    "entitlement_2": "SAP_GL_CLOSE_PERIOD",
+    "severity": "HIGH",
+    "description": "The identity would be able to post entries and then close the period, concealing the entry.",
+    "enabled": true
+  },
+  {
+    "sod_id": "SOD-003",
+    "name": "Expense Submission vs Expense Approval",
+    "entitlement_1": "CONCUR_EXPENSE_SUBMIT",
+    "entitlement_2": "CONCUR_EXPENSE_APPROVE",
+    "severity": "MEDIUM",
+    "description": "The identity would be able to submit and approve their own expense claims.",
+    "enabled": true
+  },
+  {
+    "sod_id": "SOD-004",
+    "name": "Customer Invoicing vs Payment Approval",
+    "entitlement_1": "SAP_AR_MANAGE_INVOICE",
+    "entitlement_2": "SAP_AP_APPROVE_PAYMENT",
+    "severity": "HIGH",
+    "description": "The identity would control both sides of the cash cycle.",
+    "enabled": true
+  },
+  {
+    "sod_id": "SOD-005",
+    "name": "Warehouse Administration vs Personal Data Access",
+    "entitlement_1": "SNOWFLAKE_ADMIN",
+    "entitlement_2": "SNOWFLAKE_PII_READ",
+    "severity": "HIGH",
+    "description": "The identity could grant themselves personal data access and remove the audit trail.",
+    "enabled": true
+  },
+  {
+    "sod_id": "SOD-006",
+    "name": "Workforce Administration vs Compensation Visibility",
+    "entitlement_1": "WORKDAY_HR_ADMIN",
+    "entitlement_2": "WORKDAY_COMP_VIEW",
+    "severity": "HIGH",
+    "description": "The identity could alter their own compensation record and view the results.",
+    "enabled": true
+  },
+  {
+    "sod_id": "SOD-007",
+    "name": "SAP Administration vs Financial Posting",
+    "entitlement_1": "SAP_BASIS_ADMIN",
+    "entitlement_2": "SAP_FIN_POST_JOURNAL",
+    "severity": "CRITICAL",
+    "description": "The identity could post financial entries and suppress the system audit log.",
+    "enabled": true
+  },
+  {
+    "sod_id": "SOD-008",
+    "name": "Retired CRM Administration Conflict",
+    "entitlement_1": "SALESFORCE_CRM_ADMIN",
+    "entitlement_2": "SALESFORCE_CRM_READ",
+    "severity": "LOW",
+    "description": "Superseded rule retained for audit history. Disabled, and must never be evaluated.",
+    "enabled": false
+  }
+]

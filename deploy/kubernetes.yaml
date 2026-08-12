@@ -1,0 +1,189 @@
+# ---------------------------------------------------------------------------
+# Plain Kubernetes manifests for the Space-Cloud cluster.
+#
+# Space Cloud runs on Kubernetes, so the service can be deployed either through
+# `space-cli apply` (see space-cloud-service.yaml) or with these manifests
+# applied directly. Use these when you want the migration to run as a proper
+# Job with its own lifecycle, or when the Space Cloud runner is not in play.
+#
+#   kubectl apply -f deploy/kubernetes.yaml
+#   kubectl -n newjoiner wait --for=condition=complete job/newjoiner-migrate --timeout=180s
+#   kubectl -n newjoiner rollout status deploy/newjoiner-api
+#
+# The database is the Space-Cloud PostgreSQL add-on installed with
+# `space-cli add database postgres --name postgres`, reachable in-cluster at
+# postgres.db.svc.cluster.local:5432.
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: newjoiner
+---
+# Replace this with a real secret manager (or `kubectl create secret`) before
+# using outside a demo. It is a manifest here only so the stack is applyable in
+# one step; the value is never baked into the image or the source.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: newjoiner-db
+  namespace: newjoiner
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: "CHANGE_ME"
+  # Set only when DEMO_MODE=false and an LLM provider is configured.
+  LLM_API_KEY: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: newjoiner-config
+  namespace: newjoiner
+data:
+  POSTGRES_HOST: "postgres.db.svc.cluster.local"
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: "postgres"
+  POSTGRES_DB: "newjoiner"
+  POSTGRES_SSLMODE: "disable"
+
+  ENVIRONMENT: "production"
+  DEBUG: "false"
+  API_PREFIX: "/api/v1"
+  LOG_LEVEL: "INFO"
+  LOG_JSON: "true"
+
+  AFFINITY_THRESHOLD: "70.0"
+  RISK_LOW_MAX: "30"
+  RISK_MEDIUM_MAX: "69"
+  RISK_HIGH_MAX: "89"
+
+  DEMO_MODE: "true"
+  LLM_PROVIDER: "none"
+
+  MCP_CLIENT_MODE: "inmemory"
+  MCP_SERVER_NAME: "agentic-access-recommendation-engine"
+
+  MAX_REQUEST_BYTES: "1048576"
+---
+# Schema migration and seeding as a one-shot Job, so no API replica ever races
+# another to migrate on start-up.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: newjoiner-migrate
+  namespace: newjoiner
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: newjoiner
+        component: migrate
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: ghcr.io/your-org/agentic-access-recommendation-engine:0.1.0
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              /usr/local/bin/entrypoint.sh migrate
+              /usr/local/bin/entrypoint.sh seed
+          envFrom:
+            - configMapRef:
+                name: newjoiner-config
+            - secretRef:
+                name: newjoiner-db
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newjoiner-api
+  namespace: newjoiner
+  labels:
+    app: newjoiner
+    component: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: newjoiner
+      component: api
+  template:
+    metadata:
+      labels:
+        app: newjoiner
+        component: api
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+      containers:
+        - name: api
+          image: ghcr.io/your-org/agentic-access-recommendation-engine:0.1.0
+          imagePullPolicy: IfNotPresent
+          args: ["api"]
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: newjoiner-config
+            - secretRef:
+                name: newjoiner-db
+          env:
+            - name: RUN_MIGRATIONS
+              value: "false"
+            - name: RUN_SEED
+              value: "false"
+            - name: WEB_CONCURRENCY
+              value: "2"
+          # /health returns 503 while PostgreSQL is unreachable, so readiness
+          # tracks the database and liveness only tracks the process.
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 250m
+              memory: 384Mi
+            limits:
+              cpu: 1000m
+              memory: 768Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: newjoiner-api
+  namespace: newjoiner
+  labels:
+    app: newjoiner
+    component: api
+spec:
+  type: ClusterIP
+  selector:
+    app: newjoiner
+    component: api
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http

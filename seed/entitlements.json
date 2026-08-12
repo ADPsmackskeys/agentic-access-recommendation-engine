@@ -1,0 +1,218 @@
+[
+  {
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "entitlement_name": "SAP Finance Display",
+    "application": "SAP",
+    "description": "Read-only display of GL accounts, cost centres and financial documents.",
+    "owner": "finance.apps@example.com",
+    "risk_score": 15,
+    "risk_category": "READ_ONLY"
+  },
+  {
+    "entitlement_id": "SAP_FIN_POST_JOURNAL",
+    "entitlement_name": "SAP Post Journal Entry",
+    "application": "SAP",
+    "description": "Create and post general ledger journal entries.",
+    "owner": "finance.apps@example.com",
+    "risk_score": 62,
+    "risk_category": "TRANSACTIONAL"
+  },
+  {
+    "entitlement_id": "SAP_AP_CREATE_VENDOR",
+    "entitlement_name": "SAP Create/Maintain Vendor",
+    "application": "SAP",
+    "description": "Create and maintain vendor master records in accounts payable.",
+    "owner": "ap.controls@example.com",
+    "risk_score": 72,
+    "risk_category": "MASTER_DATA"
+  },
+  {
+    "entitlement_id": "SAP_AP_APPROVE_PAYMENT",
+    "entitlement_name": "SAP Approve Outgoing Payment",
+    "application": "SAP",
+    "description": "Release and approve outgoing vendor payment runs.",
+    "owner": "ap.controls@example.com",
+    "risk_score": 88,
+    "risk_category": "FINANCIAL_APPROVAL"
+  },
+  {
+    "entitlement_id": "SAP_AR_MANAGE_INVOICE",
+    "entitlement_name": "SAP Manage Customer Invoice",
+    "application": "SAP",
+    "description": "Create, amend and clear customer invoices in accounts receivable.",
+    "owner": "ar.controls@example.com",
+    "risk_score": 55,
+    "risk_category": "TRANSACTIONAL"
+  },
+  {
+    "entitlement_id": "SAP_GL_CLOSE_PERIOD",
+    "entitlement_name": "SAP Close Accounting Period",
+    "application": "SAP",
+    "description": "Open and close financial accounting periods for the ledger.",
+    "owner": "financial.control@example.com",
+    "risk_score": 91,
+    "risk_category": "PERIOD_CONTROL"
+  },
+  {
+    "entitlement_id": "SAP_BASIS_ADMIN",
+    "entitlement_name": "SAP Basis Administrator",
+    "application": "SAP",
+    "description": "Full SAP Basis administration including user and role maintenance.",
+    "owner": "sap.basis@example.com",
+    "risk_score": 96,
+    "risk_category": "PRIVILEGED"
+  },
+  {
+    "entitlement_id": "ORACLE_ERP_FIN_READ",
+    "entitlement_name": "Oracle ERP Finance Inquiry",
+    "application": "Oracle",
+    "description": "Read-only inquiry across Oracle ERP financial modules.",
+    "owner": "erp.platform@example.com",
+    "risk_score": 18,
+    "risk_category": "READ_ONLY"
+  },
+  {
+    "entitlement_id": "ORACLE_ERP_JOURNAL_APPROVE",
+    "entitlement_name": "Oracle ERP Journal Approver",
+    "application": "Oracle",
+    "description": "Approve journal batches awaiting review in Oracle ERP.",
+    "owner": "erp.platform@example.com",
+    "risk_score": 78,
+    "risk_category": "FINANCIAL_APPROVAL"
+  },
+  {
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "entitlement_name": "Snowflake Finance Reader",
+    "application": "Snowflake",
+    "description": "Query access to the curated FINANCE schema in the data warehouse.",
+    "owner": "data.platform@example.com",
+    "risk_score": 25,
+    "risk_category": "READ_ONLY"
+  },
+  {
+    "entitlement_id": "SNOWFLAKE_PII_READ",
+    "entitlement_name": "Snowflake PII Reader",
+    "application": "Snowflake",
+    "description": "Query access to schemas containing personally identifiable information.",
+    "owner": "data.privacy@example.com",
+    "risk_score": 82,
+    "risk_category": "SENSITIVE_DATA"
+  },
+  {
+    "entitlement_id": "SNOWFLAKE_ADMIN",
+    "entitlement_name": "Snowflake Account Administrator",
+    "application": "Snowflake",
+    "description": "ACCOUNTADMIN role granting full control of the Snowflake account.",
+    "owner": "data.platform@example.com",
+    "risk_score": 94,
+    "risk_category": "PRIVILEGED"
+  },
+  {
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "entitlement_name": "Power BI Finance Viewer",
+    "application": "Power BI",
+    "description": "View published finance dashboards and reports.",
+    "owner": "bi.team@example.com",
+    "risk_score": 12,
+    "risk_category": "READ_ONLY"
+  },
+  {
+    "entitlement_id": "POWERBI_FINANCE_PUBLISH",
+    "entitlement_name": "Power BI Finance Publisher",
+    "application": "Power BI",
+    "description": "Publish and share datasets and reports in the Finance workspace.",
+    "owner": "bi.team@example.com",
+    "risk_score": 45,
+    "risk_category": "CONTENT_PUBLISHING"
+  },
+  {
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "entitlement_name": "Concur Submit Expense",
+    "application": "Concur",
+    "description": "Submit personal travel and expense claims.",
+    "owner": "expense.ops@example.com",
+    "risk_score": 8,
+    "risk_category": "SELF_SERVICE"
+  },
+  {
+    "entitlement_id": "CONCUR_EXPENSE_APPROVE",
+    "entitlement_name": "Concur Approve Expense",
+    "application": "Concur",
+    "description": "Approve expense claims submitted by other employees.",
+    "owner": "expense.ops@example.com",
+    "risk_score": 68,
+    "risk_category": "FINANCIAL_APPROVAL"
+  },
+  {
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "entitlement_name": "Workday Employee Self Service",
+    "application": "Workday",
+    "description": "Maintain own personal and employment details.",
+    "owner": "hris.team@example.com",
+    "risk_score": 5,
+    "risk_category": "SELF_SERVICE"
+  },
+  {
+    "entitlement_id": "WORKDAY_COMP_VIEW",
+    "entitlement_name": "Workday Compensation Viewer",
+    "application": "Workday",
+    "description": "View compensation and salary data for the wider organisation.",
+    "owner": "hris.team@example.com",
+    "risk_score": 74,
+    "risk_category": "SENSITIVE_DATA"
+  },
+  {
+    "entitlement_id": "WORKDAY_HR_ADMIN",
+    "entitlement_name": "Workday HR Administrator",
+    "application": "Workday",
+    "description": "Full administration of worker records and organisational structures.",
+    "owner": "hris.team@example.com",
+    "risk_score": 92,
+    "risk_category": "PRIVILEGED"
+  },
+  {
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "entitlement_name": "ServiceNow Requester",
+    "application": "ServiceNow",
+    "description": "Raise incidents and service catalogue requests.",
+    "owner": "itsm.team@example.com",
+    "risk_score": 10,
+    "risk_category": "SELF_SERVICE"
+  },
+  {
+    "entitlement_id": "SERVICENOW_ITIL_AGENT",
+    "entitlement_name": "ServiceNow ITIL Agent",
+    "application": "ServiceNow",
+    "description": "Work incidents, problems and changes as a fulfilment agent.",
+    "owner": "itsm.team@example.com",
+    "risk_score": 40,
+    "risk_category": "OPERATIONAL"
+  },
+  {
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "entitlement_name": "Jira Project Contributor",
+    "application": "Jira",
+    "description": "Create and transition issues within assigned Jira projects.",
+    "owner": "devtools@example.com",
+    "risk_score": 12,
+    "risk_category": "OPERATIONAL"
+  },
+  {
+    "entitlement_id": "SALESFORCE_CRM_READ",
+    "entitlement_name": "Salesforce CRM Reader",
+    "application": "Salesforce",
+    "description": "Read access to accounts, contacts and opportunities.",
+    "owner": "crm.team@example.com",
+    "risk_score": 20,
+    "risk_category": "READ_ONLY"
+  },
+  {
+    "entitlement_id": "SALESFORCE_CRM_ADMIN",
+    "entitlement_name": "Salesforce CRM Administrator",
+    "application": "Salesforce",
+    "description": "System administrator profile for the Salesforce org.",
+    "owner": "crm.team@example.com",
+    "risk_score": 85,
+    "risk_category": "PRIVILEGED"
+  }
+]

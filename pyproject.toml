@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentic-access-recommendation-engine"
+version = "0.1.0"
+description = "AI-assisted joiner access recommendation engine with deterministic IGA governance, LangGraph orchestration and MCP tooling."
+requires-python = ">=3.12"
+readme = "README.md"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "integration: tests that require a live PostgreSQL database",
+    "mcp: tests that exercise the MCP protocol layer",
+    "slow: tests that spawn a subprocess or otherwise take seconds",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

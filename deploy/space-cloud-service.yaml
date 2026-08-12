@@ -1,0 +1,101 @@
+# ---------------------------------------------------------------------------
+# Space Cloud service definition for the Agentic Access Recommendation Engine.
+#
+# Apply with:
+#   space-cli login
+#   space-cli apply -f deploy/space-cloud-service.yaml --project newjoiner
+#
+# The database is the Space-Cloud PostgreSQL add-on, added with:
+#   space-cli add database postgres --name postgres
+# which exposes it in-cluster as postgres.db.svc.cluster.local:5432.
+#
+# Credentials: replace the POSTGRES_PASSWORD value below with a Space Cloud
+# secret reference before using this outside a demo environment. The `secrets`
+# list on the task is the mechanism for that:
+#   space-cli apply -f deploy/space-cloud-secret.yaml --project newjoiner
+# then add the secret name to `secrets: [newjoiner-db]` and drop the plaintext env.
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: service
+meta:
+  projectId: newjoiner
+  id: newjoiner-api
+  version: v1
+spec:
+  labels:
+    app: agentic-access-recommendation-engine
+    component: api
+  scale:
+    replicas: 1
+    minReplicas: 1
+    maxReplicas: 3
+    concurrency: 50
+    mode: parallel
+  tasks:
+    - id: newjoiner-api
+      name: newjoiner-api
+      ports:
+        - name: http
+          protocol: http
+          port: 8000
+      resources:
+        cpu: 500
+        memory: 512
+      docker:
+        image: ghcr.io/your-org/agentic-access-recommendation-engine:0.1.0
+        secret: ""
+        imagePullPolicy: pull-if-not-exists
+        cmd: []
+      env:
+        # --- Database: the Space-Cloud PostgreSQL add-on -------------------
+        POSTGRES_HOST: postgres.db.svc.cluster.local
+        POSTGRES_PORT: "5432"
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: CHANGE_ME
+        POSTGRES_DB: newjoiner
+        POSTGRES_SSLMODE: disable
+
+        # --- Application ---------------------------------------------------
+        ENVIRONMENT: production
+        DEBUG: "false"
+        API_PREFIX: /api/v1
+        LOG_LEVEL: INFO
+        LOG_JSON: "true"
+
+        # Migrations are a deliberate deployment step, not a pod-start side
+        # effect: with more than one replica they would race. Run the
+        # `newjoiner-migrate` task below instead.
+        RUN_MIGRATIONS: "false"
+        RUN_SEED: "false"
+
+        # --- Governance thresholds ------------------------------------------
+        AFFINITY_THRESHOLD: "70.0"
+        RISK_LOW_MAX: "30"
+        RISK_MEDIUM_MAX: "69"
+        RISK_HIGH_MAX: "89"
+
+        # --- LLM / demo mode -------------------------------------------------
+        # DEMO_MODE=true keeps the service fully deterministic and free of any
+        # external AI dependency. Set it to false and supply LLM_API_KEY (via a
+        # secret) to enable LLM-written explanations.
+        DEMO_MODE: "true"
+        LLM_PROVIDER: none
+
+        # --- MCP ---------------------------------------------------------------
+        # The API serves MCP over Streamable HTTP at /mcp, and the workflow
+        # reaches its tools through an in-process MCP session.
+        MCP_CLIENT_MODE: inmemory
+        MCP_SERVER_NAME: agentic-access-recommendation-engine
+
+        # --- HTTP ---------------------------------------------------------------
+        CORS_ORIGINS: ""
+        MAX_REQUEST_BYTES: "1048576"
+      secrets: []
+      runtime: image
+  affinity: []
+  whitelists:
+    - projectId: newjoiner
+      service: "*"
+  upstreams:
+    - projectId: newjoiner
+      service: "*"

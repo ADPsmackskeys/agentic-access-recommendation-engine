@@ -1,0 +1,1487 @@
+[
+  {
+    "employee_id": "EMP001",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP001",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP001",
+    "entitlement_id": "ORACLE_ERP_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP001",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP001",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP001",
+    "entitlement_id": "SAP_FIN_POST_JOURNAL",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP001",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP001",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP001",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP002",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP002",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP002",
+    "entitlement_id": "ORACLE_ERP_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP002",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP002",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP002",
+    "entitlement_id": "SAP_FIN_POST_JOURNAL",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP002",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP002",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP002",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP003",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP003",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP003",
+    "entitlement_id": "ORACLE_ERP_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP003",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP003",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP003",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP003",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP003",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP004",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP004",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP004",
+    "entitlement_id": "ORACLE_ERP_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP004",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP004",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP004",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP004",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP004",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP005",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP005",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP005",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP005",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP005",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP005",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP005",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP006",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP006",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP006",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP006",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP006",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP006",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP007",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP007",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP007",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP007",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP007",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP008",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP008",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP008",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP008",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP009",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP009",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP009",
+    "entitlement_id": "SAP_AP_APPROVE_PAYMENT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP009",
+    "entitlement_id": "SAP_AP_CREATE_VENDOR",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP009",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP009",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP009",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP009",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP010",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP010",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP010",
+    "entitlement_id": "SAP_AP_APPROVE_PAYMENT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP010",
+    "entitlement_id": "SAP_AP_CREATE_VENDOR",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP010",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP010",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP010",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP010",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP011",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP011",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP011",
+    "entitlement_id": "SAP_AP_APPROVE_PAYMENT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP011",
+    "entitlement_id": "SAP_AP_CREATE_VENDOR",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP011",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP011",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP011",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP011",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP012",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP012",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP012",
+    "entitlement_id": "SAP_AP_APPROVE_PAYMENT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP012",
+    "entitlement_id": "SAP_AP_CREATE_VENDOR",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP012",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP012",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP012",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP013",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP013",
+    "entitlement_id": "SAP_AP_APPROVE_PAYMENT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP013",
+    "entitlement_id": "SAP_AP_CREATE_VENDOR",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP013",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP013",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP013",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP014",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP014",
+    "entitlement_id": "SAP_AP_CREATE_VENDOR",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP014",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP014",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP014",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP015",
+    "entitlement_id": "CONCUR_EXPENSE_APPROVE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP015",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP015",
+    "entitlement_id": "ORACLE_ERP_JOURNAL_APPROVE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP015",
+    "entitlement_id": "POWERBI_FINANCE_PUBLISH",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP015",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP015",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP015",
+    "entitlement_id": "SAP_FIN_POST_JOURNAL",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP015",
+    "entitlement_id": "SAP_GL_CLOSE_PERIOD",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP015",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP015",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP015",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP016",
+    "entitlement_id": "CONCUR_EXPENSE_APPROVE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP016",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP016",
+    "entitlement_id": "ORACLE_ERP_JOURNAL_APPROVE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP016",
+    "entitlement_id": "POWERBI_FINANCE_PUBLISH",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP016",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP016",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP016",
+    "entitlement_id": "SAP_FIN_POST_JOURNAL",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP016",
+    "entitlement_id": "SAP_GL_CLOSE_PERIOD",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP016",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP016",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP016",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP017",
+    "entitlement_id": "CONCUR_EXPENSE_APPROVE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP017",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP017",
+    "entitlement_id": "ORACLE_ERP_JOURNAL_APPROVE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP017",
+    "entitlement_id": "POWERBI_FINANCE_PUBLISH",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP017",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP017",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP017",
+    "entitlement_id": "SAP_FIN_POST_JOURNAL",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP017",
+    "entitlement_id": "SAP_GL_CLOSE_PERIOD",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP017",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP017",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP017",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP018",
+    "entitlement_id": "CONCUR_EXPENSE_APPROVE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP018",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP018",
+    "entitlement_id": "POWERBI_FINANCE_PUBLISH",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP018",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP018",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP018",
+    "entitlement_id": "SAP_FIN_POST_JOURNAL",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP018",
+    "entitlement_id": "SAP_GL_CLOSE_PERIOD",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP018",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP018",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP018",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP019",
+    "entitlement_id": "CONCUR_EXPENSE_APPROVE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP019",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP019",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP019",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP019",
+    "entitlement_id": "SAP_FIN_POST_JOURNAL",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP019",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP019",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP019",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP020",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP020",
+    "entitlement_id": "ORACLE_ERP_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP020",
+    "entitlement_id": "POWERBI_FINANCE_PUBLISH",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP020",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP020",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP020",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP020",
+    "entitlement_id": "SNOWFLAKE_PII_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP020",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP021",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP021",
+    "entitlement_id": "ORACLE_ERP_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP021",
+    "entitlement_id": "POWERBI_FINANCE_PUBLISH",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP021",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP021",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP021",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP021",
+    "entitlement_id": "SNOWFLAKE_PII_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP021",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP022",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP022",
+    "entitlement_id": "POWERBI_FINANCE_PUBLISH",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP022",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP022",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP022",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP022",
+    "entitlement_id": "SNOWFLAKE_PII_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP022",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP023",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP023",
+    "entitlement_id": "POWERBI_FINANCE_PUBLISH",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP023",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP023",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP023",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP023",
+    "entitlement_id": "SNOWFLAKE_PII_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP023",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP024",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP024",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP024",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP024",
+    "entitlement_id": "SNOWFLAKE_ADMIN",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP024",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP024",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP025",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP025",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP025",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP025",
+    "entitlement_id": "WORKDAY_COMP_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP025",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP026",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP026",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP026",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP026",
+    "entitlement_id": "WORKDAY_COMP_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP026",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP027",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP027",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP027",
+    "entitlement_id": "WORKDAY_COMP_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP027",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP028",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP028",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP028",
+    "entitlement_id": "WORKDAY_HR_ADMIN",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP028",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP029",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP029",
+    "entitlement_id": "SALESFORCE_CRM_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP029",
+    "entitlement_id": "SERVICENOW_ITIL_AGENT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP029",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP029",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP030",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP030",
+    "entitlement_id": "SERVICENOW_ITIL_AGENT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP030",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP030",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP031",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP031",
+    "entitlement_id": "SERVICENOW_ITIL_AGENT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP031",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP031",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP032",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP032",
+    "entitlement_id": "SAP_BASIS_ADMIN",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP032",
+    "entitlement_id": "SERVICENOW_ITIL_AGENT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP032",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP032",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP033",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP033",
+    "entitlement_id": "JIRA_PROJECT_USER",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP033",
+    "entitlement_id": "SALESFORCE_CRM_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP033",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP033",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP034",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP034",
+    "entitlement_id": "SALESFORCE_CRM_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP034",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP034",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP035",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP035",
+    "entitlement_id": "SALESFORCE_CRM_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP035",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP035",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP036",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP036",
+    "entitlement_id": "SALESFORCE_CRM_ADMIN",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP036",
+    "entitlement_id": "SALESFORCE_CRM_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP036",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP036",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP037",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP037",
+    "entitlement_id": "SAP_AP_CREATE_VENDOR",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP037",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP037",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP037",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP038",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP038",
+    "entitlement_id": "SAP_AP_CREATE_VENDOR",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP038",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP038",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP038",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP039",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP039",
+    "entitlement_id": "SAP_AP_CREATE_VENDOR",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP039",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP039",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP039",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP040",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP040",
+    "entitlement_id": "ORACLE_ERP_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP040",
+    "entitlement_id": "ORACLE_ERP_JOURNAL_APPROVE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP040",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP040",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP040",
+    "entitlement_id": "SAP_FIN_POST_JOURNAL",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP040",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP040",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP040",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP041",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP041",
+    "entitlement_id": "ORACLE_ERP_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP041",
+    "entitlement_id": "ORACLE_ERP_JOURNAL_APPROVE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP041",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP041",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP041",
+    "entitlement_id": "SAP_FIN_POST_JOURNAL",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP041",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP041",
+    "entitlement_id": "SNOWFLAKE_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP041",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP042",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP042",
+    "entitlement_id": "ORACLE_ERP_FIN_READ",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP042",
+    "entitlement_id": "POWERBI_FINANCE_VIEW",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP042",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP042",
+    "entitlement_id": "SAP_FIN_POST_JOURNAL",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP042",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP042",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP043",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP043",
+    "entitlement_id": "SAP_AR_MANAGE_INVOICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP043",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP043",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP043",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP044",
+    "entitlement_id": "CONCUR_EXPENSE_SUBMIT",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP044",
+    "entitlement_id": "SAP_AR_MANAGE_INVOICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP044",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP044",
+    "entitlement_id": "SERVICENOW_REQUEST",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP044",
+    "entitlement_id": "WORKDAY_SELF_SERVICE",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP045",
+    "entitlement_id": "SAP_BASIS_ADMIN",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP045",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP045",
+    "entitlement_id": "SAP_GL_CLOSE_PERIOD",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP045",
+    "entitlement_id": "SNOWFLAKE_ADMIN",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP046",
+    "entitlement_id": "SAP_BASIS_ADMIN",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP046",
+    "entitlement_id": "SAP_FIN_DISPLAY",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP046",
+    "entitlement_id": "SAP_GL_CLOSE_PERIOD",
+    "source": "SEED"
+  },
+  {
+    "employee_id": "EMP046",
+    "entitlement_id": "SNOWFLAKE_ADMIN",
+    "source": "SEED"
+  }
+]
