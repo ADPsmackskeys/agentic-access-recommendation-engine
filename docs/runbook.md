@@ -118,16 +118,16 @@ demonstrates live MCP tool discovery and invocation. **Does not need the API
 running** — only the port-forward.
 
 ```bash
-.venv/bin/python scripts/run_demo.py --employee EMP1002 --quiet
+.venv/bin/python scripts/run_demo.py --employee NJ1007 --quiet
 ```
 
 `--quiet` suppresses structured logs so the output is clean for an audience.
 Drop it when you want to see the machinery.
 
 ```bash
-.venv/bin/python scripts/run_demo.py                      # EMP1001, clean path
-.venv/bin/python scripts/run_demo.py --employee EMP1003   # multiple SoD conflicts
-.venv/bin/python scripts/run_demo.py --all                # all 7 joiners
+.venv/bin/python scripts/run_demo.py                      # NJ1001, clean path
+.venv/bin/python scripts/run_demo.py --employee NJ1008    # no peers: recommends nothing
+.venv/bin/python scripts/run_demo.py --all                # all 10 joiners
 .venv/bin/python scripts/run_demo.py --skip-mcp-demo      # workflow only
 .venv/bin/python scripts/run_demo.py --mcp-mode stdio     # workflow over subprocess MCP
 ```
@@ -136,29 +136,34 @@ Drop it when you want to see the machinery.
 
 | Joiner | Shows | Talking point |
 |---|---|---|
-| `EMP1001` Jane Smith | 8 exact peers, all clean | The happy path; affinity 100 / 87.5 / 75 / 25% |
-| `EMP1002` Marcus Chen | **SoD CRITICAL + policy block** | Peers hold a toxic pair; the engine refuses to copy it |
-| `EMP1003` Priya Nair | Multiple SoD conflicts, critical-risk item | A manager joiner needs review, not automation |
-| `EMP1004` Diego Alvarez | Contractor `DENY` → `REJECTED` | Contract type gates sensitive data; no approval path |
-| `EMP1005` Aisha Khan | Location policy block | Data residency: Bangalore is outside approved locations |
-| `EMP1006` Tom Becker | **Fallback peer matching** | No one shares his role → relaxes to department+level, confidence drops 0.95 → 0.525 |
-| `EMP1007` Lena Rossi | Small clean peer group | Contrast case |
+| `NJ1001` Rahul Sharma | 5 exact peers, clean | **The client's own worked example**, reproduced exactly: 100 / 100 / 80 / 20% |
+| `NJ1007` Suresh Iyer | **Two human-review holds** | `AUDIT_TOOL` (75) trips their POL005; `SHAREPOINT_AUDIT` is unscored and fails *closed* at 100 |
+| `NJ1006` Neha Singh | Thin peer group + boundary | One peer → confidence 0.6175, flagged insufficient; `RSA_GRC` scores exactly 70 and trips POL005 |
+| `NJ1010` Arjun Patel | **Fallback peer matching** | Senior Financial Analyst — nobody shares the role *or* the level, so it relaxes all the way to department; confidence 0.8075 → 0.4675 |
+| `NJ1008` Deepa Joseph | **No peer group at all** | No HR identities exist, so it recommends *nothing* rather than inventing something |
+| `NJ1004` Anjali Rao | Small clean group | `CONFLUENCE_USER` at 66.67% falls below the 70% threshold — the cutoff doing real work |
 
-**Strongest 3-minute demo:** `EMP1001` (it works) → `EMP1002` (it catches the
-toxic pair) → `EMP1004` (it enforces contractor policy). That arc shows
-recommendation, prevention and enforcement.
+**Strongest 3-minute demo:** `NJ1001` (it reproduces the client's own numbers) →
+`NJ1007` (it fails closed on an entitlement nobody scored) → `NJ1008` (it
+declines to guess). That arc shows recommendation, caution and honesty.
+
+> **Know before you demo:** nothing in the client's extract can reach `BLOCKED`
+> or `MANAGER_APPROVAL`. Their only policies are two risk thresholds that both
+> map to human review, and no identity holds either side of an SoD pair — so
+> those controls are correct but inert against this data. If someone asks to see
+> an SoD block, use the engine directly (§6) rather than a joiner analysis.
 
 ### Option B — live over the API
 
 ```bash
-curl -s -X POST localhost:8000/api/v1/joiners/EMP1002/analyze \
+curl -s -X POST localhost:8000/api/v1/joiners/NJ1007/analyze \
   -H 'Content-Type: application/json' -d '{}' | python3 -m json.tool | less
 ```
 
 Readable summary of just the decisions:
 
 ```bash
-curl -s -X POST localhost:8000/api/v1/joiners/EMP1002/analyze \
+curl -s -X POST localhost:8000/api/v1/joiners/NJ1007/analyze \
   -H 'Content-Type: application/json' -d '{}' \
 | python3 -c "
 import json,sys
@@ -179,7 +184,7 @@ curl -s localhost:8000/api/v1/dashboard | python3 -m json.tool
 ### Option C — through Swagger UI
 
 http://localhost:8000/docs → `POST /api/v1/joiners/{employee_id}/analyze` →
-*Try it out* → `EMP1002` → Execute. Good when the audience wants to click.
+*Try it out* → `NJ1007` → Execute. Good when the audience wants to click.
 
 ### Option D — the MCP surface
 
@@ -197,8 +202,8 @@ async def main():
         for t in tools:
             print("  -", t.name)
         r = await c.call_tool("check_sod_conflicts", {
-            "employee_id": "EMP1002",
-            "entitlement_ids": ["SAP_AP_CREATE_VENDOR", "SAP_AP_APPROVE_PAYMENT"],
+            "employee_id": "NJ1001",
+            "entitlement_ids": ["SAP_VENDOR_CREATE", "SAP_PAYMENT_APPROVER"],
         })
         d = r.structured_content
         print("\nSoD:", d["status"], d["severity"], d["conflicts"][0]["sod_id"])
@@ -219,7 +224,7 @@ logged with the analysis correlation id:
 ```bash
 LOG_JSON=false LOG_LEVEL=INFO .venv/bin/python -c "
 from app.agents.graph import run_analysis
-r = run_analysis('EMP1002')
+r = run_analysis('NJ1007')
 print(r.analysis_id, r.status.value)
 "
 ```
@@ -236,7 +241,7 @@ The correlation id comes back in the `X-Correlation-Id` response header, and you
 can set it yourself:
 
 ```bash
-curl -s -D- -X POST localhost:8000/api/v1/joiners/EMP1001/analyze \
+curl -s -D- -X POST localhost:8000/api/v1/joiners/NJ1001/analyze \
   -H 'X-Correlation-Id: demo-run-1' -H 'Content-Type: application/json' -d '{}' \
   -o /dev/null | grep -i correlation
 ```
@@ -264,16 +269,16 @@ from app.db.session import read_session
 from app.services import PeerAnalysisService, AffinityService, RiskService, PolicyService, SodService
 
 with read_session() as s:
-    peers = PeerAnalysisService(s).find_peers("EMP1002")
+    peers = PeerAnalysisService(s).find_peers("NJ1007")
     print("strategy:", peers.matching_strategy.value, "| peers:", peers.peer_ids)
 
-    aff = AffinityService(s).calculate("EMP1002", peers)
+    aff = AffinityService(s).calculate("NJ1007", peers)
     for c in aff.candidates:
         print(f"  {c.entitlement_id:26s} {c.affinity_score:6.2f}%  ({c.peer_count}/{c.total_peers})  threshold={c.meets_threshold}")
 
     ids = [c.entitlement_id for c in aff.above_threshold()]
-    print("policy:", PolicyService(s).validate("EMP1002", ids).status.value)
-    print("sod   :", SodService(s).check("EMP1002", ids).status.value)
+    print("policy:", PolicyService(s).validate("NJ1007", ids).status.value)
+    print("sod   :", SodService(s).check("NJ1007", ids).status.value)
 EOF
 ```
 
@@ -285,12 +290,12 @@ from app.db.session import read_session
 from app.services import SodService, PolicyService
 
 with read_session() as s:
-    sod = SodService(s).check("EMP1002", ["SAP_AP_CREATE_VENDOR", "SAP_AP_APPROVE_PAYMENT"])
+    sod = SodService(s).check("NJ1001", ["SAP_VENDOR_CREATE", "SAP_PAYMENT_APPROVER"])
     for c in sod.conflicts:
         print(f"{c.sod_id} [{c.severity.value}] {c.entitlement_1} + {c.entitlement_2}")
         print("   ", c.reason)
 
-    pol = PolicyService(s).validate("EMP1002", ["SAP_AP_CREATE_VENDOR"])
+    pol = PolicyService(s).validate("NJ1001", ["SAP_PAYMENT_APPROVER"])
     for r in pol.results:
         for p in r.failed_policies:
             print(f"{p.policy_id} [{p.status.value}] {p.policy_name}")
@@ -314,7 +319,7 @@ SELECT r.entitlement_id, r.affinity_score, r.risk_score, r.risk_level,
        r.policy_status, r.sod_status, r.recommendation_status, r.approval_tier
 FROM recommendations r
 JOIN joiner_analyses a ON a.analysis_id = r.analysis_id
-WHERE a.employee_id = 'EMP1002'
+WHERE a.employee_id = 'NJ1007'
 ORDER BY r.affinity_score DESC;
 
 -- why was something blocked?
@@ -345,7 +350,7 @@ WHERE r.entitlement_id = 'SAP_FIN_DISPLAY' LIMIT 10;
 from app.agents.mcp_bridge import McpToolInvoker
 with McpToolInvoker(mode="stdio") as inv:
     print(inv.list_tools())
-    print(inv.call("find_peer_employees", {"employee_id": "EMP1001"})["peer_count"])
+    print(inv.call("find_peer_employees", {"employee_id": "NJ1001"})["peer_count"])
 EOF
 ```
 
@@ -380,10 +385,10 @@ producing different outcomes:
 
 ```bash
 # Loosen the recommendation threshold: more entitlements get recommended
-AFFINITY_THRESHOLD=50 .venv/bin/python scripts/run_demo.py --employee EMP1001 --quiet
+AFFINITY_THRESHOLD=50 .venv/bin/python scripts/run_demo.py --employee NJ1001 --quiet
 
 # Tighten risk banding: things that were MEDIUM become HIGH and need a manager
-RISK_MEDIUM_MAX=40 .venv/bin/python scripts/run_demo.py --employee EMP1003 --quiet
+RISK_MEDIUM_MAX=40 .venv/bin/python scripts/run_demo.py --employee NJ1006 --quiet
 ```
 
 ### Toggling a control off — proving the block is real
@@ -391,32 +396,43 @@ RISK_MEDIUM_MAX=40 .venv/bin/python scripts/run_demo.py --employee EMP1003 --qui
 Disabling a control and re-running proves the decision came from a governance
 rule rather than a hardcoded special case.
 
-**Clean single-control example — the location policy on `EMP1005`:**
+Use `NJ1007`, whose three entitlements sit in three different bands. Baseline:
 
-```sql
-UPDATE policies SET enabled = false WHERE policy_id = 'POL-005';
+```
+SHAREPOINT_AUDIT   risk=100   HUMAN_REVIEW
+AUDIT_TOOL         risk= 75   HUMAN_REVIEW
+POWERBI_AUDIT      risk= 10   AUTO_APPROVED
 ```
 
-Re-run `EMP1005`: `WORKDAY_COMP_VIEW` moves from **BLOCKED / HUMAN_REVIEW** to
-**MANAGER_APPROVAL** — it is still risk 74 (HIGH), so the risk tier takes over
-once the policy stops blocking. Restore with `enabled = true`.
-
-**Layered-controls example — `EMP1002`'s toxic pair.** Note that disabling
-`SOD-001` *alone* changes nothing, because `POL-001` blocks the same pair
-independently. That is defence in depth working, and it is worth saying out
-loud in a demo. To see the fall-through you must disable both:
+**Disable the client's risk-review policy:**
 
 ```sql
-UPDATE sod_rules SET enabled = false WHERE sod_id  = 'SOD-001';
-UPDATE policies  SET enabled = false WHERE policy_id = 'POL-001';
+UPDATE policies SET enabled = false WHERE policy_id = 'POL005';
 ```
 
-Re-run `EMP1002`: both SAP AP entitlements move from **BLOCKED / HUMAN_REVIEW**
-to **MANAGER_APPROVAL** (risk 72 and 88 are HIGH). Restore both afterwards:
+Re-run `NJ1007`: `AUDIT_TOOL` moves from **HUMAN_REVIEW** to
+**MANAGER_APPROVAL**. It is still risk 75 (HIGH), so the risk band takes over
+once the policy stops demanding review — the decision fell through to a weaker
+control rather than disappearing. *(This is also the only way to see
+`MANAGER_APPROVAL` on this dataset at all.)*
+
+**Now disable the critical-access policy too:**
 
 ```sql
-UPDATE sod_rules SET enabled = true WHERE sod_id  = 'SOD-001';
-UPDATE policies  SET enabled = true WHERE policy_id = 'POL-001';
+UPDATE policies SET enabled = false WHERE policy_id = 'POL006';
+```
+
+Re-run `NJ1007`: **`SHAREPOINT_AUDIT` does not move.** It is still held at
+`HUMAN_REVIEW` with both policies off, because its risk of 100 puts it in the
+CRITICAL band, and the risk tier is an independent control. That is defence in
+depth working, and it is worth saying out loud in a demo — especially since
+`SHAREPOINT_AUDIT` has no risk score in the client's extract at all and is
+scored 100 precisely so it fails closed.
+
+Restore afterwards:
+
+```sql
+UPDATE policies SET enabled = true;
 ```
 
 Both sequences are verified. Always restore the flags — the seed script's
@@ -448,12 +464,71 @@ Run `--reset` before a demo so the dashboard numbers start clean.
 | `psql: database "newjoiner" does not exist` | Wrong database or not created | `CREATE DATABASE newjoiner;` then `alembic upgrade head` |
 | `relation "employees" does not exist` | Migrations not applied | `alembic upgrade head` |
 | Analysis returns 0 recommendations | Not seeded | `python scripts/seed_database.py` |
+| `NJ1008` returns nothing and status `FAILED` | Correct behaviour — no HR identities exist to learn from | Nothing to fix; this is the honest case |
+| Demo hangs for minutes, `503 UNAVAILABLE` / `504 DEADLINE_EXCEEDED` | `DEMO_MODE=false` and the LLM provider is throttling | Set `DEMO_MODE=true`. The decisions are identical either way — only the prose changes |
+| `API_KEY_INVALID` **after** you fixed the key in `.env` | The running process still holds the old one — see below | Restart the server |
+| Seed counts look short (e.g. 10 risk scores, not 15) | `seed/*.json` is stale or was partially written | `python scripts/convert_client_csv.py --check`, then re-run it without `--check` |
 | `404 employee_not_found` | Wrong id | `curl localhost:8000/api/v1/joiners` for valid ids |
 | `502` / `mcp_tool_error` | MCP transport problem | Try `MCP_CLIENT_MODE=direct` to confirm |
 | Integration tests skip | Test DB unreachable | Check port-forward; `newjoiner_test` must exist |
 | Uvicorn `exit code 3` | Port already in use | `pkill -f "uvicorn app.main"` or use another port |
 | Logs interleave with demo output | Logging enabled | Add `--quiet` |
 | `/mcp` in a browser → `-32600 Not Acceptable: Client must accept text/event-stream` | **Not a fault.** See below | Use an MCP client, not a browser |
+
+### The LLM is slow or times out
+
+An analysis makes roughly five model calls (one summary plus one per candidate
+entitlement), so per-call latency multiplies. Measured on a trivial prompt:
+
+| Model | Round trip |
+|---|---|
+| `gemma-4-31b-it` | ~31s, with frequent `504 DEADLINE_EXCEEDED` / `503 UNAVAILABLE` |
+| `gemini-2.5-flash` | ~6s |
+| `gemini-3.5-flash` | ~2s |
+
+At 30s a call, an analysis exceeds `MCP_CLIENT_TIMEOUT_SECONDS` (120) and the
+explanation node fails — the decisions survive, but the prose falls back. The
+Gemma models on the Gemini API are large and heavily contended; they are a poor
+fit for a per-entitlement call pattern.
+
+**Fix:** use a flash model.
+
+```bash
+LLM_MODEL=gemini-3.5-flash
+```
+
+If you must keep Gemma, raise `MCP_CLIENT_TIMEOUT_SECONDS` to ~600 and expect a
+multi-minute demo.
+
+`LLM_MAX_RETRIES` (default 2) bounds the provider SDK's internal retry loop.
+`LLM_TIMEOUT_SECONDS` bounds a *single attempt*, not the loop — the SDK default
+of six retries is why an overloaded model could previously hold the workflow
+open for minutes.
+
+### Editing `.env` does not affect a running server
+
+`get_settings()` is `@lru_cache(maxsize=1)`, so `.env` is read **once** when the
+process starts and the values are pinned for its lifetime. `uvicorn --reload`
+watches `.py` files, so editing `.env` does not trigger a restart either — the
+server keeps serving with the old configuration indefinitely.
+
+The symptom that gives it away: a fresh process works and the long-running one
+does not. To confirm which you are looking at:
+
+```bash
+ps -eo pid,lstart,cmd | grep "[u]vicorn app.main"     # when did it start?
+```
+
+If it started before you edited `.env`, that is the whole problem. Restart it.
+
+To make `.env` edits reload automatically:
+
+```bash
+.venv/bin/uvicorn app.main:app --reload --reload-include '.env' --port 8000
+```
+
+Verified: touching `.env` then logs `WatchFiles detected changes in '.env'.
+Reloading...` and the new process picks up the new values.
 
 ### `/mcp` is not browsable
 
@@ -524,10 +599,11 @@ kubectl port-forward -n db svc/postgres 55432:5432
 .venv/bin/python -m app.mcp.server --transport http --port 8081
 
 # demo
-.venv/bin/python scripts/run_demo.py --employee EMP1002 --quiet
+.venv/bin/python scripts/run_demo.py --employee NJ1007 --quiet
 
 # schema + data
 .venv/bin/alembic upgrade head
+.venv/bin/python scripts/convert_client_csv.py --check   # JSON matches the CSVs?
 .venv/bin/python scripts/seed_database.py --reset
 
 # tests

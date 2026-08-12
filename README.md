@@ -122,7 +122,8 @@ The essentials:
 | `AFFINITY_THRESHOLD` | `70.0` | Minimum affinity % to recommend |
 | `RISK_LOW_MAX` / `RISK_MEDIUM_MAX` / `RISK_HIGH_MAX` | `30` / `69` / `89` | Risk band bounds |
 | `DEMO_MODE` | `true` | `true` ⇒ deterministic, no LLM contacted |
-| `LLM_PROVIDER` | `none` | `none` \| `anthropic` \| `openai` |
+| `LLM_PROVIDER` | `none` | `none` \| `anthropic` \| `openai` \| `google` |
+| `LLM_MODEL` | `claude-sonnet-5` | e.g. `gemma-4-31b-it`, `gemini-2.5-pro` |
 | `LLM_API_KEY` | *(unset)* | Only when `DEMO_MODE=false` |
 | `MCP_CLIENT_MODE` | `inmemory` | How the workflow reaches its MCP tools |
 | `LOG_LEVEL` / `LOG_JSON` | `INFO` / `true` | Structured logging (to stderr) |
@@ -201,39 +202,57 @@ the same command works locally, in Docker and on Space Cloud.
 
 ## Database seeding
 
+The seed corpus is the **client's own extract**. `seed/client/*.csv` is what they
+sent; `seed/*.json` is the ground truth the project loads. Two steps, kept
+separate so the transliteration can be re-run and diffed without touching the
+mapping:
+
 ```bash
+python scripts/convert_client_csv.py          # seed/client/*.csv -> seed/*.json
+python scripts/convert_client_csv.py --check  # verify the JSON still matches
+
 python scripts/seed_database.py               # idempotent upsert
 python scripts/seed_database.py --reset       # wipe analyses, keep reference data
 python scripts/seed_database.py --purge-all   # wipe everything, then reseed
 ```
 
-The corpus is deterministic — no randomness — so the affinity percentages below
-are reproducible:
+`seed_database.py` prints the data-quality findings it hits — unscored
+entitlements, unresolvable manager ids, policy rules with no implemented
+evaluator — rather than swallowing them.
+
+The corpus is deterministic — no randomness — so the affinity percentages are
+reproducible:
 
 | Data | Count |
 |---|---|
-| Active employees | 44 |
-| New joiners (`PENDING_START`) | 7 |
-| Leavers (`TERMINATED`) | 2 |
-| Entitlements across 8 applications | 24 |
-| Access grants | 297 |
-| Policies (1 disabled) | 8 |
-| SoD rules (1 disabled) | 8 |
+| Active identities | 10 |
+| New joiners (`PENDING_START`) | 10 |
+| Entitlements across 8 applications | 16 |
+| Access grants | 29 |
+| Policies loaded (of 7 supplied) | 2 |
+| SoD rules | 3 |
 
-The seeded joiners each exercise a different governance path:
+The joiners exercise different governance paths:
 
 | Joiner | Scenario | Outcome |
 |---|---|---|
-| `EMP1001` Jane Smith | Financial Analyst, 8 exact peers | Clean auto-approval |
-| `EMP1002` Marcus Chen | AP Analyst whose peers hold a toxic pair | SoD `CRITICAL` + policy block |
-| `EMP1003` Priya Nair | Finance Manager | Multiple SoD conflicts, critical-risk item |
-| `EMP1004` Diego Alvarez | Contractor, Madrid | Contractor policy `DENY` → `REJECTED` |
-| `EMP1005` Aisha Khan | HR Analyst, Bangalore | Data-residency policy block |
-| `EMP1006` Tom Becker | Role nobody else holds | Fallback peer matching |
-| `EMP1007` Lena Rossi | IT Support Analyst | Clean, small peer group |
+| `NJ1001` Rahul Sharma | Financial Analyst, 5 exact peers | Clean auto-approval — the client's own worked example |
+| `NJ1004` Anjali Rao | Software Engineer, 3 exact peers | Auto-approval; `CONFLUENCE_USER` excluded at 66.67% |
+| `NJ1006` Neha Singh | Risk Analyst, a single peer | Thin-cohort warning; `RSA_GRC` (70) → `HUMAN_REVIEW` |
+| `NJ1007` Suresh Iyer | Internal Auditor | `AUDIT_TOOL` (75) and unscored `SHAREPOINT_AUDIT` → `HUMAN_REVIEW` |
+| `NJ1008` Deepa Joseph | HR Specialist, no HR identities exist | No peer group; recommends nothing |
+| `NJ1009` Vivek Kumar | Cloud Engineer | Fallback to department matching |
+| `NJ1010` Arjun Patel | Senior Financial Analyst | Fallback to department matching |
 
-The two leavers deliberately hold toxic privileged access: if peer selection
-ever stopped filtering on employment status, it would surface immediately.
+Two properties of this corpus are worth knowing before demoing it:
+
+- **No outcome reaches `BLOCKED` or `MANAGER_APPROVAL`.** The client supplied
+  only risk-threshold policies, both mapping to human review, and no identity
+  holds either side of an SoD pair — so those controls are correct but inert
+  against this data. See [docs/client-data-assessment.md](docs/client-data-assessment.md) §3.1.
+- **Four of their seven policy rules are birthright grants** and are reported,
+  not loaded: every implemented evaluator is a restriction, and loading a grant
+  as one would invert its meaning.
 
 ---
 
@@ -268,8 +287,9 @@ invocation.
 ## Running the demo
 
 ```bash
-python scripts/run_demo.py                      # EMP1001, the clean path
-python scripts/run_demo.py --employee EMP1002   # SoD conflict path
+python scripts/run_demo.py                      # NJ1001, the clean path
+python scripts/run_demo.py --employee NJ1007    # human-review path
+python scripts/run_demo.py --employee NJ1008    # no peers: recommends nothing
 python scripts/run_demo.py --all                # every seeded joiner
 python scripts/run_demo.py --mcp-mode stdio     # workflow over subprocess MCP
 ```
@@ -291,44 +311,53 @@ Affinity threshold: 70.0%
 ==============================================================================
 NEW JOINER
 ==============================================================================
-Employee   : EMP1002 - Marcus Chen
-Role       : Accounts Payable Analyst
-Department : Finance
+Employee   : NJ1007 - Suresh Iyer
+Role       : Internal Auditor
+Department : Audit
 Level      : L3
+Location   : Mumbai
 
 ==============================================================================
 PEER ANALYSIS
 ==============================================================================
 Matching strategy : job_role_department_job_level
-Peers matched     : 6
-Confidence        : 0.855
+Strategies tried  : job_role_department_job_level
+Peers matched     : 1
+Confidence        : 0.6175
+
+Peer group:
+  EMP010   John                     Internal Auditor              3 entitlements
 
 ==============================================================================
 RECOMMENDATIONS
 ==============================================================================
 ENTITLEMENT                   AFFINITY       RISK POLICY         SOD        DECISION
 ------------------------------------------------------------------------------
-SAP_AP_CREATE_VENDOR            100.0%    72/HIGH BLOCK          CONFLICT   BLOCKED
-SAP_AP_APPROVE_PAYMENT           83.3%    88/HIGH BLOCK          CONFLICT   BLOCKED
-CONCUR_EXPENSE_SUBMIT           100.0%      8/LOW PASS           PASS       AUTO_APPROVED
-SAP_FIN_DISPLAY                 100.0%     15/LOW PASS           PASS       AUTO_APPROVED
-SERVICENOW_REQUEST              100.0%     10/LOW PASS           PASS       AUTO_APPROVED
-WORKDAY_SELF_SERVICE            100.0%      5/LOW PASS           PASS       AUTO_APPROVED
-POWERBI_FINANCE_VIEW             66.7%     12/LOW NOT_EVALUATED  NOT_EVAL   NOT_RECOMMENDED
-SNOWFLAKE_FIN_READ               50.0%     25/LOW NOT_EVALUATED  NOT_EVAL   NOT_RECOMMENDED
+AUDIT_TOOL                      100.0%    75/HIGH REQUIRES_APPROVAL PASS    HUMAN_REVIEW
+SHAREPOINT_AUDIT                100.0% 100/CRITICAL REQUIRES_APPROVAL PASS  HUMAN_REVIEW
+POWERBI_AUDIT                   100.0%     10/LOW PASS           PASS       AUTO_APPROVED
 ------------------------------------------------------------------------------
-Summary: 4 AUTO_APPROVED, 2 BLOCKED, 2 NOT_RECOMMENDED
+Summary: 1 AUTO_APPROVED, 2 HUMAN_REVIEW
 
 ==============================================================================
 CONTROLS THAT FIRED
 ==============================================================================
-SAP_AP_CREATE_VENDOR -> BLOCKED
-  Blocked: segregation-of-duties conflict (SOD-001) at CRITICAL severity.
-  The identity would be able to create a fictitious vendor and approve
-  payments to it.
-  SoD  SOD-001 [CRITICAL] Vendor Maintenance vs Payment Approval
-  Pol  POL-001 [BLOCK]    Finance Vendor and Payment Segregation
+
+AUDIT_TOOL -> HUMAN_REVIEW
+  Human review required by policy: Risk Review: entitlements scoring 70 or
+  above require human review. Risk score 75 meets the policy threshold of 70.
+  Pol  POL005 [REQUIRES_APPROVAL] Risk Review
+
+SHAREPOINT_AUDIT -> HUMAN_REVIEW
+  Human review required: risk score 100 is classified as CRITICAL (90-100).
+  Pol  POL005 [REQUIRES_APPROVAL] Risk Review
+  Pol  POL006 [REQUIRES_APPROVAL] Critical Access
 ```
+
+`SHAREPOINT_AUDIT` is the interesting one: it appears in the client's affinity
+table and is held by an existing auditor, but it has **no risk score anywhere in
+their extract**. It is loaded as 100/CRITICAL so it fails closed — an
+entitlement nobody has scored is not automatically a safe one.
 
 ---
 
@@ -577,6 +606,28 @@ returns a string, and every decision field is copied from the deterministic
 result. A test feeds in a model that fabricates a contradictory verdict and
 asserts the decision is unchanged.
 
+#### Enabling a real model
+
+The provider package is imported lazily, so only the one you name has to be
+installed. For the Gemini API — which serves both the Gemini and the Gemma
+families from a single key:
+
+```bash
+# .env
+DEMO_MODE=false            # demo mode overrides everything and wins
+LLM_PROVIDER=google        # `gemini` is accepted as an alias
+LLM_MODEL=gemma-4-31b-it   # or gemini-2.5-pro, etc.
+LLM_API_KEY=...
+```
+
+Gemma models reject the system role, so their prompt is folded into a single
+user turn automatically — detected from the model id, no configuration needed.
+
+Turning this on changes the prose and nothing else. With `LLM_PROVIDER=google`
+the explanation is generated (`generator: LLM`); with `DEMO_MODE=true` it comes
+from the template (`generator: DETERMINISTIC`); the decisions, affinity scores,
+risk scores and approval tiers are byte-identical either way.
+
 ---
 
 ## SailPoint simulation
@@ -645,12 +696,16 @@ TEST_DATABASE_URL="postgresql+psycopg://postgres:...@127.0.0.1:55432/newjoiner_t
 There is **no SQLite fallback in the tests**. The schema uses JSONB, native
 UUID and `ON CONFLICT`; a substitute engine would not exercise them faithfully.
 
-**162 tests** — 88 unit, 58 integration, 16 MCP — covering:
+The suite forces `DEMO_MODE=true` for its whole run, so no test ever reaches a
+real model — the governance workflow has to be provable without one.
+
+**187 tests** — 88 unit, 83 integration, 16 MCP — covering:
 
 | Area | What is asserted |
 |---|---|
+| **Client agreement** | All 13 rows of the client's own `peer_affinity_scores` reproduce from `identities` |
 | Peer analysis | Exact match, each fallback level, no peers, leaver/joiner exclusion |
-| Affinity | 8/8=100, 7/8=87.5, 2/8=25, zero-peer division, threshold inclusivity |
+| Affinity | 5/5=100, 4/5=80, 2/3=66.67, 1/5=20, zero-peer division, threshold inclusivity |
 | Risk | Every band and every boundary value, configurability |
 | Policy | Pass, block, deny, disabled policies, unknown type and corrupt definition failing closed |
 | SoD | No conflict, conflict, severity handling, conflict against existing access, disabled rules |
@@ -745,8 +800,8 @@ app/
 └── schemas/api.py           HTTP request/response contracts
 
 alembic/                     migrations
-seed/                        deterministic seed corpus (JSON)
-scripts/                     seed_database.py · run_demo.py
+seed/                        client extract: client/*.csv + *.json ground truth
+scripts/                     convert_client_csv.py · seed_database.py · run_demo.py
 tests/                       unit · integration · test_mcp.py
 deploy/                      Space Cloud + Kubernetes manifests
 docs/                        architecture.md · mcp.md · space-cloud-deployment.md

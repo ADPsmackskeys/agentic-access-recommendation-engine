@@ -203,8 +203,15 @@ def _translate_error(tool_name: str, message: str) -> DomainError:
         if recovered is not None:
             recovered.details.setdefault("tool", tool_name)
             return recovered
+    # Some failures arrive with nothing to report - a cancelled task or an
+    # expired deadline often stringifies to "". Saying so beats a message that
+    # trails off after the colon and leaves the reader with no lead at all.
+    detail = message.strip() or (
+        "no error detail was returned, which usually means the call timed out "
+        "(see MCP_CLIENT_TIMEOUT_SECONDS) or the task was cancelled"
+    )
     return McpToolError(
-        f"MCP tool '{tool_name}' failed: {message}", details={"tool": tool_name}
+        f"MCP tool '{tool_name}' failed: {detail}", details={"tool": tool_name}
     )
 
 

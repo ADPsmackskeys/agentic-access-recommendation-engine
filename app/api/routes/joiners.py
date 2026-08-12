@@ -47,7 +47,7 @@ def list_joiners(
 )
 def get_joiner(
     service: AnalysisSvc,
-    employee_id: str = Path(max_length=64, description="Employee identifier, e.g. EMP1001."),
+    employee_id: str = Path(max_length=64, description="Employee identifier, e.g. NJ1001."),
 ) -> EmployeeProfile:
     return service.get_employee_profile(employee_id)
 
@@ -65,7 +65,7 @@ def get_joiner(
     ),
 )
 def analyze_joiner(
-    employee_id: str = Path(max_length=64, description="Employee identifier, e.g. EMP1001."),
+    employee_id: str = Path(max_length=64, description="Employee identifier, e.g. NJ1001."),
     request: AnalyzeRequest | None = Body(default=None),
 ) -> AnalysisResponse:
     request = request or AnalyzeRequest()

@@ -13,8 +13,22 @@ affinity figures exactly, with no changes to any logic.
 
 ## 1. Evidence
 
-Everything below was executed against a database loaded from the client CSVs
-(`newjoiner_client`), using `scripts/load_client_data.py`.
+The client's extract is now the project's ground truth: it is the only seed
+corpus, and the whole test suite runs against it. Everything below was executed
+against a database loaded from it.
+
+The pipeline is two steps, deliberately separated so that the transliteration
+can be re-run and diffed without touching the mapping:
+
+```
+seed/client/*.csv  --scripts/convert_client_csv.py-->  seed/*.json
+seed/*.json        --scripts/seed_database.py------->  PostgreSQL
+```
+
+`scripts/convert_client_csv.py --check` asserts the JSON still matches the CSVs
+and exits non-zero if not. That check exists because a partial conversion had
+previously truncated two extracts at ten rows each, silently dropping the three
+Critical entitlements that every SoD rule depends on.
 
 ### 1.1 The engine reproduces `peer_affinity_scores.csv` exactly
 
@@ -215,10 +229,12 @@ is inactive if the extract cannot express the status.
 
 Keep the current structure. Specifically:
 
-1. **Adopt `scripts/load_client_data.py`** as the ingestion boundary. The
-   client's CSV shape is a source concern; the internal model stays as built.
-2. **Use `peer_affinity_scores.csv` as a regression fixture**, not an input —
+1. **Keep `scripts/seed_database.py` as the ingestion boundary.** The client's
+   file shape is a source concern; the internal model stays as built.
+2. **Use `peer_affinity_scores.json` as a regression fixture**, not an input —
    it already proves the engine correct, and it cannot answer for unseen roles.
+   This is now enforced: `tests/integration/test_client_affinity.py` asserts all
+   thirteen of their rows against a recomputation from `identities`.
 3. **Build `ROLE_BIRTHRIGHT`** (§4). This is the only real gap.
 4. **Send back the questions in §7** before hardening anything.
 

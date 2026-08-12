@@ -73,6 +73,13 @@ class Settings(BaseSettings):
     llm_temperature: float = 0.0
     llm_timeout_seconds: int = 30
     llm_max_tokens: int = 1024
+    # Provider SDKs retry 5xx internally with backoff, and their defaults are
+    # generous (the Gemini binding retries six times). `llm_timeout_seconds`
+    # bounds a single attempt, not the loop, so an overloaded model can hold the
+    # workflow open for minutes and blow past the MCP call timeout. Two attempts
+    # is enough to ride out a blip; beyond that, falling back to the
+    # deterministic explainer is the better answer than waiting.
+    llm_max_retries: int = Field(default=2, ge=0)
 
     # --- Demo mode -----------------------------------------------------------
     demo_mode: bool = True

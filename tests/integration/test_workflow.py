@@ -1,6 +1,15 @@
-"""LangGraph workflow: node execution, persistence and failure behaviour."""
+"""LangGraph workflow: node execution, persistence and failure behaviour.
+
+Driven against the client's corpus. NJ1001 is the client's own worked example
+and is used wherever a clean, fully-recommended run is needed; NJ1007 is the
+one joiner whose access reaches human review, and NJ1008 the one with no peers
+at all.
+"""
 
 from __future__ import annotations
+
+import uuid
+from datetime import datetime, timezone
 
 import pytest
 
@@ -13,6 +22,14 @@ from app.domain.exceptions import EmployeeNotFoundError
 from app.services.analysis_service import AnalysisService
 
 pytestmark = pytest.mark.integration
+
+# Statuses that must never appear in a provisioning payload.
+NOT_PROVISIONABLE = {
+    RecommendationStatus.BLOCKED,
+    RecommendationStatus.REJECTED,
+    RecommendationStatus.NOT_RECOMMENDED,
+    RecommendationStatus.HUMAN_REVIEW,
+}
 
 
 def test_graph_declares_the_expected_steps() -> None:
@@ -38,15 +55,9 @@ def test_graph_compilation_is_cached() -> None:
 
 def test_workflow_executes_every_node(app_session_factory) -> None:
     """Drive the compiled graph directly to inspect the terminal state."""
-    import uuid
-    from datetime import datetime, timezone
-
-    state = initial_state("EMP1001", str(uuid.uuid4()), "corr-test",
-                          datetime.now(timezone.utc))
+    state = initial_state("NJ1001", str(uuid.uuid4()), "corr-test", datetime.now(timezone.utc))
     with McpToolInvoker(mode="inmemory") as invoker:
-        final = get_graph().invoke(
-            state, config={"configurable": {"mcp_invoker": invoker}}
-        )
+        final = get_graph().invoke(state, config={"configurable": {"mcp_invoker": invoker}})
 
     assert [s for s in final["steps_completed"] if not s.endswith(":FAILED")] == list(
         WORKFLOW_STEPS
@@ -57,18 +68,11 @@ def test_workflow_executes_every_node(app_session_factory) -> None:
 
 def test_workflow_reaches_its_capabilities_over_mcp(app_session_factory) -> None:
     """The workflow must actually go through MCP, not around it."""
-    import uuid
-    from datetime import datetime, timezone
-
-    state = initial_state("EMP1001", str(uuid.uuid4()), "corr-mcp",
-                          datetime.now(timezone.utc))
+    state = initial_state("NJ1001", str(uuid.uuid4()), "corr-mcp", datetime.now(timezone.utc))
     with McpToolInvoker(mode="inmemory") as invoker:
-        final = get_graph().invoke(
-            state, config={"configurable": {"mcp_invoker": invoker}}
-        )
+        final = get_graph().invoke(state, config={"configurable": {"mcp_invoker": invoker}})
 
-    called = set(final["mcp_tool_calls"])
-    assert called == {
+    assert set(final["mcp_tool_calls"]) == {
         "get_joiner",
         "find_peer_employees",
         "calculate_entitlement_affinity",
@@ -83,11 +87,11 @@ def test_workflow_reaches_its_capabilities_over_mcp(app_session_factory) -> None
 def test_run_analysis_produces_and_persists_a_complete_result(
     app_session_factory,
 ) -> None:
-    result = run_analysis("EMP1001", mcp_client_mode="inmemory")
+    result = run_analysis("NJ1001", mcp_client_mode="inmemory")
 
     assert result.status is AnalysisStatus.COMPLETED
     assert result.employee is not None
-    assert result.peer_analysis is not None and result.peer_analysis.peer_count == 8
+    assert result.peer_analysis is not None and result.peer_analysis.peer_count == 5
     assert result.affinity is not None
     assert result.decisions
     assert result.explanation is not None
@@ -100,24 +104,47 @@ def test_run_analysis_produces_and_persists_a_complete_result(
     assert len(stored.decisions) == len(result.decisions)
 
 
+def test_the_clients_worked_example_reproduces(app_session_factory) -> None:
+    """NJ1001 is the walkthrough in the client's own POC document.
+
+    It expects SAP_FIN_DISPLAY, SAP_AP_INVOICE and POWERBI_FINANCE, with
+    FIN_SHAREPOINT excluded at 20% affinity.
+    """
+    result = run_analysis("NJ1001", mcp_client_mode="inmemory")
+    recommended = {
+        d.entitlement_id
+        for d in result.decisions
+        if d.recommendation_status is RecommendationStatus.AUTO_APPROVED
+    }
+    assert recommended == {"SAP_FIN_DISPLAY", "SAP_AP_INVOICE", "POWERBI_FINANCE"}
+
+    excluded = next(d for d in result.decisions if d.entitlement_id == "FIN_SHAREPOINT")
+    assert excluded.recommendation_status is RecommendationStatus.NOT_RECOMMENDED
+    assert excluded.affinity_score == 20.0
+
+    payload = {e.entitlement for e in result.sailpoint_payload.requested_entitlements}
+    assert payload == recommended
+
+
 def test_persisted_audit_trail_is_complete(app_session_factory) -> None:
-    result = run_analysis("EMP1002", mcp_client_mode="inmemory")
+    result = run_analysis("NJ1007", mcp_client_mode="inmemory")
 
     with app_session_factory() as session:
         row = AnalysisRepository(session).get_row(result.analysis_id)
         assert row is not None
         assert row.matching_strategy == "job_role_department_job_level"
-        assert row.peer_count == 6
-        assert row.peer_ids and len(row.peer_ids) == 6
+        assert row.peer_count == 1
+        assert row.peer_ids == ["EMP010"]
         assert row.correlation_id
 
-        blocked = [
-            r for r in row.recommendations
-            if r.recommendation_status == RecommendationStatus.BLOCKED.value
+        held = [
+            r
+            for r in row.recommendations
+            if r.recommendation_status == RecommendationStatus.HUMAN_REVIEW.value
         ]
-        assert blocked, "EMP1002's peer group carries a toxic pair"
-        for rec in blocked:
-            assert rec.sod_results, "a blocked recommendation must record why"
+        assert held, "NJ1007's peer holds high-risk audit tooling"
+        for rec in held:
+            assert rec.policy_results, "a held recommendation must record which control held it"
             assert rec.decision_trace
 
         for rec in row.recommendations:
@@ -126,39 +153,78 @@ def test_persisted_audit_trail_is_complete(app_session_factory) -> None:
             assert rec.explanation.structured_explanation
 
 
-def test_blocked_entitlements_never_reach_the_sailpoint_payload(
+def test_unprovisionable_entitlements_never_reach_the_sailpoint_payload(
     app_session_factory,
 ) -> None:
-    result = run_analysis("EMP1002", mcp_client_mode="inmemory")
+    """NJ1007 has both a human-review hold and an auto-approval in one run."""
+    result = run_analysis("NJ1007", mcp_client_mode="inmemory")
     requested = {e.entitlement for e in result.sailpoint_payload.requested_entitlements}
-    blocked = {
+    withheld = {
         d.entitlement_id
         for d in result.decisions
-        if d.recommendation_status
-        in (RecommendationStatus.BLOCKED, RecommendationStatus.REJECTED)
+        if d.recommendation_status in NOT_PROVISIONABLE
     }
-    assert blocked, "this fixture is only meaningful if something was blocked"
-    assert not (requested & blocked)
+    assert withheld, "this fixture is only meaningful if something was withheld"
+    assert requested, "...and only meaningful if something else got through"
+    assert not (requested & withheld)
     assert result.sailpoint_payload.status == "SIMULATED"
 
 
-def test_contractor_restriction_flows_through_the_whole_workflow(
+def test_an_unscored_entitlement_fails_closed_end_to_end(app_session_factory) -> None:
+    """SHAREPOINT_AUDIT is in nobody's risk file, so it loads as 100/CRITICAL.
+
+    It has 100% peer affinity and would otherwise sail through. The whole point
+    of failing closed is that an unscored entitlement is not a safe one, and
+    that has to survive the entire workflow, not just the loader.
+    """
+    result = run_analysis("NJ1007", mcp_client_mode="inmemory")
+    unscored = next(d for d in result.decisions if d.entitlement_id == "SHAREPOINT_AUDIT")
+
+    assert unscored.affinity_score == 100.0, "held back on risk, not on affinity"
+    assert unscored.risk_score == 100
+    assert unscored.recommendation_status is RecommendationStatus.HUMAN_REVIEW
+
+
+def test_risk_threshold_policy_flows_through_the_whole_workflow(
     app_session_factory,
 ) -> None:
-    result = run_analysis("EMP1004", mcp_client_mode="inmemory")
-    pii = next(
-        d for d in result.decisions if d.entitlement_id == "SNOWFLAKE_PII_READ"
-    )
-    assert pii.recommendation_status is RecommendationStatus.REJECTED
-    assert pii.affinity_score >= 70.0, "rejected on policy, not on affinity"
+    """RSA_GRC scores exactly 70 and trips the client's POL005."""
+    result = run_analysis("NJ1006", mcp_client_mode="inmemory")
+    grc = next(d for d in result.decisions if d.entitlement_id == "RSA_GRC")
+
+    assert grc.affinity_score == 100.0, "held back on risk, not on affinity"
+    assert grc.recommendation_status is RecommendationStatus.HUMAN_REVIEW
+    assert grc.policy_result is not None
+    assert "POL005" in {p.policy_id for p in grc.policy_result.failed_policies}
 
 
 def test_fallback_peer_matching_flows_through(app_session_factory) -> None:
-    result = run_analysis("EMP1006", mcp_client_mode="inmemory")
-    assert result.peer_analysis.matching_strategy.value == "department_job_level"
+    """NJ1010 is a Senior Financial Analyst; only the department matches."""
+    result = run_analysis("NJ1010", mcp_client_mode="inmemory")
+    assert result.peer_analysis.matching_strategy.value == "department"
     assert all(
-        d.matching_strategy.value == "department_job_level" for d in result.decisions
+        d.matching_strategy.value == "department" for d in result.decisions
     ), "every recommendation must record the strategy it came from"
+
+
+def test_a_joiner_with_no_peers_recommends_nothing(app_session_factory) -> None:
+    """NJ1008 is an HR Specialist and the corpus has no HR identities.
+
+    Nothing unrelated may be substituted, and the reason has to be recorded
+    rather than the run simply producing an empty result.
+    """
+    result = run_analysis("NJ1008", mcp_client_mode="inmemory")
+    assert result.status is AnalysisStatus.FAILED
+    assert result.decisions == []
+    assert any("no peer group" in e for e in result.errors)
+
+
+def test_a_thin_peer_group_is_flagged_but_still_analysed(app_session_factory) -> None:
+    """NJ1006 matches exactly, but against a single Risk Analyst."""
+    result = run_analysis("NJ1006", mcp_client_mode="inmemory")
+    assert result.status is AnalysisStatus.COMPLETED_WITH_WARNINGS
+    assert result.decisions, "a thin peer group still yields an analysis"
+    assert any("below the configured minimum" in e for e in result.errors)
 
 
 def test_unknown_employee_fails_fast(app_session_factory) -> None:
@@ -169,8 +235,8 @@ def test_unknown_employee_fails_fast(app_session_factory) -> None:
 
 def test_workflow_runs_identically_in_direct_mode(app_session_factory) -> None:
     """Same decisions whether or not the MCP transport is in the path."""
-    via_mcp = run_analysis("EMP1001", mcp_client_mode="inmemory")
-    via_direct = run_analysis("EMP1001", mcp_client_mode="direct")
+    via_mcp = run_analysis("NJ1001", mcp_client_mode="inmemory")
+    via_direct = run_analysis("NJ1001", mcp_client_mode="direct")
 
     def fingerprint(result):
         return sorted(
@@ -182,8 +248,8 @@ def test_workflow_runs_identically_in_direct_mode(app_session_factory) -> None:
 
 
 def test_repeated_analyses_are_deterministic(app_session_factory) -> None:
-    first = run_analysis("EMP1003", mcp_client_mode="inmemory")
-    second = run_analysis("EMP1003", mcp_client_mode="inmemory")
+    first = run_analysis("NJ1004", mcp_client_mode="inmemory")
+    second = run_analysis("NJ1004", mcp_client_mode="inmemory")
     assert first.analysis_id != second.analysis_id
     assert sorted(
         (d.entitlement_id, d.recommendation_status.value) for d in first.decisions
@@ -203,7 +269,7 @@ def test_explanation_failure_does_not_lose_the_decisions(
 
     monkeypatch.setitem(ALL_HANDLERS, "generate_access_explanation", explode)
 
-    result = run_analysis("EMP1001", mcp_client_mode="direct")
+    result = run_analysis("NJ1001", mcp_client_mode="direct")
 
     assert result.decisions, "decisions must survive an explanation failure"
     assert result.explanation is None

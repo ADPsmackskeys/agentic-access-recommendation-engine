@@ -151,14 +151,14 @@ from fastmcp import Client
 async def main():
     async with Client("http://localhost:8000/mcp/") as client:
         peers = (await client.call_tool(
-            "find_peer_employees", {"employee_id": "EMP1002"}
+            "find_peer_employees", {"employee_id": "NJ1001"}
         )).structured_content
         print(peers["matching_strategy"], peers["peer_count"], peers["confidence"])
 
         affinity = (await client.call_tool(
             "calculate_entitlement_affinity",
             {
-                "employee_id": "EMP1002",
+                "employee_id": "NJ1001",
                 "peer_ids": peers["peer_ids"],
                 "matching_strategy": peers["matching_strategy"],
             },
@@ -170,7 +170,7 @@ async def main():
 
         sod = (await client.call_tool(
             "check_sod_conflicts",
-            {"employee_id": "EMP1002", "entitlement_ids": requested},
+            {"employee_id": "NJ1001", "entitlement_ids": requested},
         )).structured_content
         print(sod["status"], sod["severity"])
         for conflict in sod["conflicts"]:
@@ -182,14 +182,14 @@ asyncio.run(main())
 ```
 job_role_department_job_level 6 0.855
 CONFLICT CRITICAL
-SOD-001 SAP_AP_CREATE_VENDOR + SAP_AP_APPROVE_PAYMENT
+SOD001 SAP_VENDOR_CREATE + SAP_PAYMENT_APPROVER
 ```
 
 ### The whole workflow in one call
 
 ```python
 result = (await client.call_tool(
-    "run_access_analysis", {"employee_id": "EMP1001"}
+    "run_access_analysis", {"employee_id": "NJ1001"}
 )).structured_content
 
 print(result["analysis_id"], result["status"], len(result["decisions"]))
@@ -275,7 +275,7 @@ pytest tests/test_mcp.py -v
 pytest tests/test_mcp.py::test_stdio_transport_works -v
 
 # 3. Watch the workflow make its MCP calls
-python scripts/run_demo.py --employee EMP1002
+python scripts/run_demo.py --employee NJ1007
 
 # 4. Run the workflow itself over the subprocess transport
 python scripts/run_demo.py --mcp-mode stdio --skip-mcp-demo

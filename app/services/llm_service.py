@@ -110,6 +110,7 @@ class LangChainLLMService(LLMService):
                     temperature=self.settings.llm_temperature,
                     max_tokens=self.settings.llm_max_tokens,
                     timeout=self.settings.llm_timeout_seconds,
+                    max_retries=self.settings.llm_max_retries,
                 )
             elif provider == "openai":
                 from langchain_openai import ChatOpenAI
@@ -120,6 +121,7 @@ class LangChainLLMService(LLMService):
                     temperature=self.settings.llm_temperature,
                     max_tokens=self.settings.llm_max_tokens,
                     timeout=self.settings.llm_timeout_seconds,
+                    max_retries=self.settings.llm_max_retries,
                 )
             elif provider == "google":
                 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -133,6 +135,7 @@ class LangChainLLMService(LLMService):
                     temperature=self.settings.llm_temperature,
                     max_output_tokens=self.settings.llm_max_tokens,
                     timeout=self.settings.llm_timeout_seconds,
+                    max_retries=self.settings.llm_max_retries,
                 )
             else:
                 raise LlmError(f"Unsupported LLM provider '{provider}'.")

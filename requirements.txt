@@ -18,6 +18,10 @@ psycopg[binary]>=3.2,<4.0
 langgraph>=0.2
 langchain>=0.3
 langchain-core>=0.3
+# Provider packages are imported lazily by app/services/llm_service.py, so only
+# the one named by LLM_PROVIDER has to be installed. This is the Gemini API
+# binding, which serves both the Gemini and the Gemma model families.
+langchain-google-genai>=2.0
 
 # --- MCP ---
 mcp>=1.2

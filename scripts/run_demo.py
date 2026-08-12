@@ -6,8 +6,9 @@ then demonstrates live MCP tool discovery and invocation over a real MCP
 session against a subprocess server.
 
 Usage:
-    python scripts/run_demo.py                      # default joiner (EMP1001)
-    python scripts/run_demo.py --employee EMP1002   # SoD conflict scenario
+    python scripts/run_demo.py                      # default joiner (NJ1001)
+    python scripts/run_demo.py --employee NJ1007    # human-review scenario
+    python scripts/run_demo.py --employee NJ1008    # no peers: recommends nothing
     python scripts/run_demo.py --all                # every seeded joiner
     python scripts/run_demo.py --skip-mcp-demo      # workflow only
     python scripts/run_demo.py --mcp-mode stdio     # run workflow over stdio MCP
@@ -290,7 +291,7 @@ def run_for(employee_id: str, mcp_mode: str | None) -> AnalysisResult:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--employee", default="EMP1001", help="Joiner to analyse.")
+    parser.add_argument("--employee", default="NJ1001", help="Joiner to analyse.")
     parser.add_argument("--all", action="store_true", help="Analyse every seeded joiner.")
     parser.add_argument("--skip-mcp-demo", action="store_true", help="Skip the MCP walkthrough.")
     parser.add_argument(

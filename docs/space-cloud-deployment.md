@@ -267,7 +267,7 @@ kubectl -n newjoiner port-forward svc/newjoiner-api 8000:8000
 
 curl -s localhost:8000/api/v1/health
 curl -s localhost:8000/api/v1/joiners
-curl -s -X POST localhost:8000/api/v1/joiners/EMP1001/analyze -d '{}' \
+curl -s -X POST localhost:8000/api/v1/joiners/NJ1001/analyze -d '{}' \
      -H 'Content-Type: application/json'
 curl -s localhost:8000/api/v1/dashboard
 ```

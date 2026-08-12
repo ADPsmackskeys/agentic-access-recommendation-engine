@@ -58,13 +58,13 @@ def test_correlation_id_is_echoed(client: TestClient) -> None:
 # --------------------------------------------------------------------------- #
 def test_list_joiners(client: TestClient) -> None:
     body = client.get(f"{PREFIX}/joiners").json()
-    assert body["count"] == 7
+    assert body["count"] == 10
     assert all(j["employment_status"] == "PENDING_START" for j in body["joiners"])
 
 
 def test_get_joiner(client: TestClient) -> None:
-    body = client.get(f"{PREFIX}/joiners/EMP1001").json()
-    assert body["name"] == "Jane Smith"
+    body = client.get(f"{PREFIX}/joiners/NJ1001").json()
+    assert body["name"] == "Rahul Sharma"
     assert body["job_role"] == "Financial Analyst"
 
 
@@ -87,7 +87,7 @@ def test_analyzing_an_unknown_joiner_returns_404(client: TestClient) -> None:
 # Analysis
 # --------------------------------------------------------------------------- #
 def test_analyze_returns_the_complete_journey(client: TestClient) -> None:
-    response = client.post(f"{PREFIX}/joiners/EMP1001/analyze", json={})
+    response = client.post(f"{PREFIX}/joiners/NJ1001/analyze", json={})
     assert response.status_code == 200
     body = response.json()
 
@@ -105,14 +105,14 @@ def test_analyze_returns_the_complete_journey(client: TestClient) -> None:
         assert field in body, f"missing response section: {field}"
 
     assert body["status"] == "COMPLETED"
-    assert body["peer_analysis"]["peer_count"] == 8
+    assert body["peer_analysis"]["peer_count"] == 5
     assert body["recommendations"]
     assert body["sailpoint_payload"]["status"] == "SIMULATED"
     assert body["summary"]["AUTO_APPROVED"] > 0
 
 
 def test_analysis_can_be_retrieved_after_the_fact(client: TestClient) -> None:
-    created = client.post(f"{PREFIX}/joiners/EMP1002/analyze", json={}).json()
+    created = client.post(f"{PREFIX}/joiners/NJ1007/analyze", json={}).json()
     fetched = client.get(f"{PREFIX}/analyses/{created['analysis_id']}").json()
 
     assert fetched["analysis_id"] == created["analysis_id"]
@@ -129,7 +129,7 @@ def test_unknown_analysis_returns_404(client: TestClient) -> None:
 
 
 def test_analysis_list(client: TestClient) -> None:
-    client.post(f"{PREFIX}/joiners/EMP1007/analyze", json={})
+    client.post(f"{PREFIX}/joiners/NJ1004/analyze", json={})
     body = client.get(f"{PREFIX}/analyses?limit=5").json()
     assert body["count"] >= 1
     assert "matching_strategy" in body["analyses"][0]
@@ -138,8 +138,9 @@ def test_analysis_list(client: TestClient) -> None:
 # --------------------------------------------------------------------------- #
 # Access requests
 # --------------------------------------------------------------------------- #
-def test_access_request_excludes_blocked_entitlements(client: TestClient) -> None:
-    analysis = client.post(f"{PREFIX}/joiners/EMP1002/analyze", json={}).json()
+def test_access_request_excludes_withheld_entitlements(client: TestClient) -> None:
+    """NJ1007 has both an auto-approval and two human-review holds in one run."""
+    analysis = client.post(f"{PREFIX}/joiners/NJ1007/analyze", json={}).json()
     response = client.post(
         f"{PREFIX}/access-requests", json={"analysis_id": analysis["analysis_id"]}
     )
@@ -148,13 +149,15 @@ def test_access_request_excludes_blocked_entitlements(client: TestClient) -> Non
     assert body["status"] == "SIMULATED"
 
     requested = {e["entitlement"] for e in body["payload"]["requested_entitlements"]}
-    blocked = {
+    withheld = {
         r["entitlement_id"]
         for r in analysis["recommendations"]
-        if r["recommendation_status"] in ("BLOCKED", "REJECTED", "HUMAN_REVIEW")
+        if r["recommendation_status"]
+        in ("BLOCKED", "REJECTED", "HUMAN_REVIEW", "NOT_RECOMMENDED")
     }
-    assert blocked
-    assert not (requested & blocked)
+    assert withheld, "this fixture is only meaningful if something was withheld"
+    assert requested, "...and only meaningful if something else got through"
+    assert not (requested & withheld)
 
 
 def test_access_request_for_unknown_analysis_returns_404(client: TestClient) -> None:
@@ -175,7 +178,7 @@ def test_malformed_access_request_is_rejected(client: TestClient) -> None:
 # Dashboard
 # --------------------------------------------------------------------------- #
 def test_dashboard_reports_every_required_metric(client: TestClient) -> None:
-    client.post(f"{PREFIX}/joiners/EMP1002/analyze", json={})
+    client.post(f"{PREFIX}/joiners/NJ1007/analyze", json={})
     body = client.get(f"{PREFIX}/dashboard").json()
 
     for metric in (
@@ -191,9 +194,13 @@ def test_dashboard_reports_every_required_metric(client: TestClient) -> None:
     ):
         assert metric in body, f"missing dashboard metric: {metric}"
 
-    assert body["total_joiners"] == 7
+    assert body["total_joiners"] == 10
     assert body["total_analyses"] >= 1
-    assert body["blocked"] >= 1
+    # Nothing in the client's extract can produce BLOCKED: their only policies
+    # are risk thresholds, and no identity holds either side of an SoD pair.
+    # Human review is the strongest outcome this corpus reaches.
+    assert body["blocked"] == 0
+    assert body["human_review"] >= 1
 
 
 def test_request_size_is_bounded(client: TestClient) -> None:

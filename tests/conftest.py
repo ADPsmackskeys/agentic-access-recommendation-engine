@@ -43,6 +43,31 @@ def _test_database_url() -> str:
     return url
 
 
+@pytest.fixture(autouse=True, scope="session")
+def _no_live_llm() -> Iterator[None]:
+    """Force demo mode for the whole suite.
+
+    The governance workflow must stay runnable and testable without any
+    external AI dependency, and a test that quietly reaches a real model is
+    neither deterministic nor free. Tests that exercise the LLM abstraction
+    construct their own Settings rather than relying on the environment.
+    """
+    previous = {
+        name: os.environ.get(name) for name in ("DEMO_MODE", "LLM_PROVIDER", "LLM_API_KEY")
+    }
+    os.environ["DEMO_MODE"] = "true"
+    os.environ["LLM_PROVIDER"] = "none"
+    os.environ["LLM_API_KEY"] = ""
+    reset_settings_cache()
+    yield
+    for name, value in previous.items():
+        if value is None:
+            os.environ.pop(name, None)
+        else:
+            os.environ[name] = value
+    reset_settings_cache()
+
+
 @pytest.fixture(scope="session")
 def db_engine() -> Iterator[Engine]:
     url = _test_database_url()
