@@ -9,7 +9,7 @@ across REST, MCP tools and the workflow.
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from fastapi import Depends
 from sqlalchemy.orm import Session
@@ -17,6 +17,9 @@ from sqlalchemy.orm import Session
 from app.config import Settings, get_settings
 from app.db.session import session_scope
 from app.services.analysis_service import AnalysisService
+
+if TYPE_CHECKING:  # pragma: no cover - import cycle avoidance
+    from app.services.chat_service import ChatService
 
 
 def get_db() -> Iterator[Session]:
@@ -33,3 +36,12 @@ def get_analysis_service(session: DbSession) -> AnalysisService:
 
 
 AnalysisSvc = Annotated[AnalysisService, Depends(get_analysis_service)]
+
+
+def get_chat_service(session: DbSession) -> "ChatService":
+    from app.services.chat_service import ChatService
+
+    return ChatService(session)
+
+
+ChatSvc = Annotated["ChatService", Depends(get_chat_service)]

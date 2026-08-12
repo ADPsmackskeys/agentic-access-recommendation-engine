@@ -20,7 +20,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from app.config import Settings, get_settings
-from app.domain.enums import RecommendationStatus, SailPointRequestStatus
+from app.domain.enums import ApprovalTier, RecommendationStatus, SailPointRequestStatus
 from app.domain.models import (
     AccessDecision,
     EmployeeProfile,
@@ -108,7 +108,17 @@ class SailPointService:
                 "job_role": employee.job_role,
                 "job_level": employee.job_level,
                 "location": employee.location,
+                # Both are reported: the resolved identity when there is one,
+                # and the source-system id, which is what an approval workflow
+                # can actually route on when the manager is not in the extract.
                 "manager_id": employee.manager_id,
+                "manager_external_id": employee.manager_external_id,
+                # The subset an approver has to act on before provisioning. The
+                # rest of `requested_entitlements` is auto-approved and needs no
+                # human in the loop.
+                "manager_approval_required": sorted(
+                    e.entitlement for e in included if e.approval_tier is ApprovalTier.MANAGER
+                ),
                 "included_statuses": sorted(s.value for s in eligible),
                 "simulated": True,
                 "note": (

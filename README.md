@@ -124,6 +124,7 @@ The essentials:
 | `DEMO_MODE` | `true` | `true` ⇒ deterministic, no LLM contacted |
 | `LLM_PROVIDER` | `none` | `none` \| `anthropic` \| `openai` \| `google` |
 | `LLM_MODEL` | `claude-sonnet-5` | e.g. `gemma-4-31b-it`, `gemini-2.5-pro` |
+| `CHAT_LLM_MODEL` | *(unset)* | Model for `/chat`; falls back to `LLM_MODEL` |
 | `LLM_API_KEY` | *(unset)* | Only when `DEMO_MODE=false` |
 | `MCP_CLIENT_MODE` | `inmemory` | How the workflow reaches its MCP tools |
 | `LOG_LEVEL` / `LOG_JSON` | `INFO` / `true` | Structured logging (to stderr) |
@@ -244,12 +245,26 @@ The joiners exercise different governance paths:
 | `NJ1009` Vivek Kumar | Cloud Engineer | Fallback to department matching |
 | `NJ1010` Arjun Patel | Senior Financial Analyst | Fallback to department matching |
 
-Two properties of this corpus are worth knowing before demoing it:
+The joiner routing rule, as it runs today:
 
-- **No outcome reaches `BLOCKED` or `MANAGER_APPROVAL`.** The client supplied
-  only risk-threshold policies, both mapping to human review, and no identity
-  holds either side of an SoD pair — so those controls are correct but inert
-  against this data. See [docs/client-data-assessment.md](docs/client-data-assessment.md) §3.1.
+| Risk band | Outcome | On the ticket? |
+|---|---|---|
+| LOW (0–30) / MEDIUM (31–69) | `AUTO_APPROVED` | Yes — provisioned without a human |
+| HIGH (70–89) | `MANAGER_APPROVAL` | Yes — flagged for the line manager |
+| CRITICAL (90–100) | `HUMAN_REVIEW` | No — withheld for governance |
+| Affinity below 70% | `NOT_RECOMMENDED` | No |
+
+The tier for a risk-threshold policy is derived from where its threshold sits in
+the configured bands, because the client's `policy_rules.csv` types both `POL005`
+(≥70) and `POL006` (≥90) as the same undifferentiated `HUMAN_APPROVAL`. That maps
+`POL005` to manager approval and `POL006` to human review.
+
+One property of this corpus is worth knowing before demoing it:
+
+- **No outcome reaches `BLOCKED`.** No identity holds either side of an SoD
+  pair, and the client supplied no blocking policies — so that control is
+  correct but inert against this data. See
+  [docs/client-data-assessment.md](docs/client-data-assessment.md) §3.1.
 - **Four of their seven policy rules are birthright grants** and are reported,
   not loaded: every implemented evaluator is a restriction, and loading a grant
   as one would invert its meaning.
@@ -438,6 +453,52 @@ Errors are structured, with the domain code preserved across the MCP boundary:
   "details": { "employee_id": "NOPE" }
 }
 ```
+
+### Ask a question
+
+```bash
+curl -s -X POST localhost:8000/api/v1/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"question": "Which entitlements have a risk score of 70 or more?"}'
+```
+
+```json
+{
+  "answer": "AD_DOMAIN_ADMIN in Active Directory has a risk score of 100. AUDIT_TOOL in Audit Platform has 75, RSA_GRC in RSA Archer has 70, SAP_PAYMENT_APPROVER has 95, SAP_VENDOR_CREATE has 90, and SHAREPOINT_AUDIT has 100.",
+  "sql": "SELECT entitlement_id, entitlement_name, application, risk_score FROM entitlements WHERE risk_score >= 70 LIMIT 200",
+  "tables": ["entitlements"],
+  "row_count": 6,
+  "rows": [ ... ],
+  "generator": "LLM",
+  "model": "gemini-2.5-flash"
+}
+```
+
+The question is translated into a single `SELECT`, which is validated and then
+run in a **`READ ONLY` transaction** against an allow-list of tables. The SQL and
+the rows behind the answer come back on every response, including failures — an
+answer nobody can check is not usable for governance.
+
+> **This reports; it does not decide.** It reads current holdings and the
+> outcomes of past analyses. Whether access *should* be granted is decided
+> deterministically by the recommendation engine, which no model participates in.
+> "Can X access Y?" returns what the records say, not a new access decision.
+
+Four layers stand between a generated query and the database:
+
+| Layer | Stops |
+|---|---|
+| `sqlglot` parse | Anything that is not one `SELECT`; statement stacking; `SELECT INTO`; `pg_read_file`, `dblink`, `pg_sleep` |
+| Table allow-list | System catalogues, `alembic_version`, any table not explicitly readable |
+| `READ ONLY` transaction | Every write — enforced by PostgreSQL, not by the parser |
+| Row cap + statement timeout | Runaway or unbounded results |
+
+The third is the real guarantee; the rest exist to give clear errors and keep
+obviously wrong queries off the wire. `tests/unit/test_sql_guard.py` asserts 19
+hostile queries are refused.
+
+Requires a configured LLM (`503` otherwise) — set `CHAT_LLM_MODEL` to run chat on
+a different model from the explanation layer, which keeps their quotas separate.
 
 ---
 
@@ -699,7 +760,7 @@ UUID and `ON CONFLICT`; a substitute engine would not exercise them faithfully.
 The suite forces `DEMO_MODE=true` for its whole run, so no test ever reaches a
 real model — the governance workflow has to be provable without one.
 
-**187 tests** — 88 unit, 83 integration, 16 MCP — covering:
+**236 tests** — 120 unit, 100 integration, 16 MCP — covering:
 
 | Area | What is asserted |
 |---|---|
@@ -715,6 +776,7 @@ real model — the governance workflow has to be provable without one.
 | MCP | Discovery, schemas, invocation, error propagation, stdio subprocess transport |
 | LangGraph | Node sequence, exact set of MCP tools used, persistence, failure isolation |
 | REST | Every endpoint, error codes, OpenAPI completeness, request size limit |
+| **Chat safety** | 19 hostile queries refused; row cap enforced; a smuggled `DELETE` refused by PostgreSQL itself |
 
 ---
 

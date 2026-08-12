@@ -46,6 +46,10 @@ class EmployeeProfile(DomainModel):
     job_level: str
     location: str
     manager_id: str | None = None
+    # The manager as the source system names them. Set even when `manager_id`
+    # could not be resolved to an identity, so a manager-tier approval always
+    # has an approver to route to.
+    manager_external_id: str | None = None
     cost_center: str | None = None
     start_date: date | None = None
     employment_status: EmploymentStatus

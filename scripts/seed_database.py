@@ -215,6 +215,7 @@ def build_employees(
                 "job_level": _text(row, "job_level"),
                 "location": _text(row, "location"),
                 "manager_id": None,
+                "manager_external_id": None,
                 "cost_center": None,
                 "start_date": None,
                 # `identities` carries no lifecycle column, so every identity is
@@ -237,6 +238,9 @@ def build_employees(
                 "job_level": _text(row, "job_level"),
                 "location": _text(row, "location"),
                 "manager_id": _text(row, "manager_id") or None,
+                # Kept whether or not it resolves to an identity - manager-tier
+                # approvals need a name to route to.
+                "manager_external_id": _text(row, "manager_id") or None,
                 "cost_center": _text(row, "cost_center") or None,
                 "start_date": date.fromisoformat(start) if start else None,
                 "employment_status": EmploymentStatus.PENDING_START.value,
@@ -252,7 +256,8 @@ def build_employees(
     )
     if unresolved:
         warnings.append(
-            f"manager_id values {unresolved} are not identities in the corpus; stored as NULL"
+            f"manager_id values {unresolved} are not identities in the corpus; the foreign key "
+            f"is stored as NULL and the source value is kept in manager_external_id"
         )
     for row in employees:
         if row["manager_id"] not in known:
@@ -309,7 +314,16 @@ def build_policies(
         threshold = _THRESHOLD.match(rule)
         if threshold and threshold.group("field") == "risk_score":
             value = int(threshold.group("value"))
-            tier = "HUMAN_REVIEW" if type_ == "HUMAN_APPROVAL" else "MANAGER"
+            # The client's `type` column says HUMAN_APPROVAL for every threshold
+            # rule, which cannot distinguish "a manager signs this off" from
+            # "governance must look at it". The risk band does distinguish them,
+            # so the tier is derived from where the threshold sits: a rule
+            # firing inside the HIGH band routes to the line manager, one
+            # reaching CRITICAL routes to human review. On the supplied rules
+            # that makes POL005 (>=70) a manager approval and POL006 (>=90) a
+            # human review, which is the intended joiner routing.
+            settings = get_settings()
+            tier = "HUMAN_REVIEW" if value > settings.risk_high_max else "MANAGER"
             policies.append(
                 {
                     "policy_id": policy_id,

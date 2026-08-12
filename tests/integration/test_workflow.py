@@ -17,7 +17,7 @@ from app.agents.graph import WORKFLOW_STEPS, build_graph, get_graph, run_analysi
 from app.agents.mcp_bridge import McpToolInvoker
 from app.agents.state import initial_state
 from app.db.repositories.analysis_repo import AnalysisRepository
-from app.domain.enums import AnalysisStatus, RecommendationStatus
+from app.domain.enums import AnalysisStatus, ApprovalTier, RecommendationStatus
 from app.domain.exceptions import EmployeeNotFoundError
 from app.services.analysis_service import AnalysisService
 
@@ -188,12 +188,18 @@ def test_an_unscored_entitlement_fails_closed_end_to_end(app_session_factory) ->
 def test_risk_threshold_policy_flows_through_the_whole_workflow(
     app_session_factory,
 ) -> None:
-    """RSA_GRC scores exactly 70 and trips the client's POL005."""
+    """RSA_GRC scores exactly 70, the inclusive bottom of the HIGH band.
+
+    POL005 fires (`risk_score >= 70`) and routes to the line manager rather than
+    to governance review - 70 sits inside HIGH, not CRITICAL.
+    """
     result = run_analysis("NJ1006", mcp_client_mode="inmemory")
     grc = next(d for d in result.decisions if d.entitlement_id == "RSA_GRC")
 
-    assert grc.affinity_score == 100.0, "held back on risk, not on affinity"
-    assert grc.recommendation_status is RecommendationStatus.HUMAN_REVIEW
+    assert grc.affinity_score == 100.0, "routed on risk, not on affinity"
+    assert grc.risk_score == 70
+    assert grc.recommendation_status is RecommendationStatus.MANAGER_APPROVAL
+    assert grc.approval_tier is ApprovalTier.MANAGER
     assert grc.policy_result is not None
     assert "POL005" in {p.policy_id for p in grc.policy_result.failed_policies}
 
@@ -280,3 +286,48 @@ def test_explanation_failure_does_not_lose_the_decisions(
     with app_session_factory() as session:
         stored = AnalysisService(session).get_analysis(result.analysis_id)
     assert len(stored.decisions) == len(result.decisions)
+
+
+def test_high_risk_routes_to_the_manager_and_low_risk_auto_approves(
+    app_session_factory,
+) -> None:
+    """The joiner routing rule, end to end.
+
+    Low and medium risk are ticketed automatically; high risk is ticketed but
+    flagged for the line manager; critical is withheld for human review. NJ1007
+    is the one joiner whose three entitlements span all three outcomes.
+    """
+    result = run_analysis("NJ1007", mcp_client_mode="inmemory")
+    by_id = {d.entitlement_id: d for d in result.decisions}
+
+    low = by_id["POWERBI_AUDIT"]                   # risk 10
+    assert low.recommendation_status is RecommendationStatus.AUTO_APPROVED
+    assert low.approval_tier is ApprovalTier.AUTO
+
+    high = by_id["AUDIT_TOOL"]                     # risk 75, HIGH band
+    assert high.recommendation_status is RecommendationStatus.MANAGER_APPROVAL
+    assert high.approval_tier is ApprovalTier.MANAGER
+
+    critical = by_id["SHAREPOINT_AUDIT"]           # risk 100, CRITICAL band
+    assert critical.recommendation_status is RecommendationStatus.HUMAN_REVIEW
+
+    # Both the auto-approved and the manager-tier entitlement are raised on the
+    # ticket; only the critical one is withheld.
+    metadata = result.sailpoint_payload.metadata
+    requested = {e.entitlement for e in result.sailpoint_payload.requested_entitlements}
+    assert requested == {"POWERBI_AUDIT", "AUDIT_TOOL"}
+    assert metadata["manager_approval_required"] == ["AUDIT_TOOL"]
+
+
+def test_a_manager_tier_request_names_an_approver(app_session_factory) -> None:
+    """`MGR400` is not an identity in the extract, so the FK cannot hold it.
+
+    Routing to a manager is meaningless without one, so the source-system id is
+    preserved separately and reported on the payload.
+    """
+    result = run_analysis("NJ1007", mcp_client_mode="inmemory")
+    metadata = result.sailpoint_payload.metadata
+
+    assert metadata["manager_id"] is None, "MGR400 is not an identity in the corpus"
+    assert metadata["manager_external_id"] == "MGR400"
+    assert metadata["manager_approval_required"], "an approver is only needed if something needs it"

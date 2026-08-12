@@ -80,6 +80,13 @@ class Settings(BaseSettings):
     # is enough to ride out a blip; beyond that, falling back to the
     # deterministic explainer is the better answer than waiting.
     llm_max_retries: int = Field(default=2, ge=0)
+    # The chat surface may run on a different model from the explanation layer.
+    # They have different shapes - chat is one interactive request that must
+    # emit valid SQL, explanations are ~5 batched prose calls per analysis - and
+    # on the Gemini API each model carries its own quota, so splitting them
+    # keeps an interactive question from being starved by a batch run. Falls
+    # back to `llm_model` when unset.
+    chat_llm_model: str | None = None
 
     # --- Demo mode -----------------------------------------------------------
     demo_mode: bool = True
@@ -91,7 +98,12 @@ class Settings(BaseSettings):
     mcp_port: int = 8081
     mcp_client_mode: McpClientMode = "inmemory"
     mcp_client_url: str = "http://localhost:8081/mcp"
-    mcp_client_timeout_seconds: int = 120
+    # An analysis makes one LLM call per candidate entitlement plus a summary,
+    # so with a real provider the explanation step dominates: measured at ~110s
+    # against gemini-3.6-flash. The previous 120s default left almost no
+    # headroom and failed intermittently. Deterministic runs finish in under a
+    # second, so a generous ceiling costs them nothing.
+    mcp_client_timeout_seconds: int = 300
 
     # --- HTTP ----------------------------------------------------------------
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])

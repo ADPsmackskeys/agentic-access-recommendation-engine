@@ -169,3 +169,51 @@ class AccessRequestResponse(ApiModel):
     status: str = Field(description="Always SIMULATED in this MVP.")
     entitlement_count: int
     payload: SailPointRequestPayload
+
+
+class ChatRequest(ApiModel):
+    question: str = Field(
+        min_length=1,
+        max_length=1000,
+        description="A question about identities, entitlements, current access, policies, "
+        "SoD rules or past analyses.",
+        examples=["Can EMP001 access SAP ECC?"],
+    )
+    max_rows: int = Field(
+        default=200,
+        ge=1,
+        le=500,
+        description="Row cap applied to the generated query.",
+    )
+
+
+class ChatResponse(ApiModel):
+    """An answer plus everything needed to verify it.
+
+    `sql` is returned on every response, including failures. An answer nobody
+    can check is not usable for governance, and the query is the only thing that
+    explains where a figure came from.
+    """
+
+    question: str
+    answer: str
+    sql: str | None = Field(
+        default=None, description="The query that produced the answer, after validation."
+    )
+    tables: list[str] = Field(default_factory=list, description="Tables the query read.")
+    columns: list[str] = Field(default_factory=list)
+    rows: list[dict[str, Any]] = Field(
+        default_factory=list, description="The rows the answer was derived from."
+    )
+    row_count: int = 0
+    truncated: bool = Field(
+        default=False, description="True when the row cap was reached and rows were dropped."
+    )
+    generator: str = Field(
+        default="LLM",
+        description="LLM, REFUSED (question out of scope), or ROWS_ONLY (phrasing failed).",
+    )
+    model: str | None = None
+    error: str | None = Field(
+        default=None, description="Populated when a step failed; the answer says so in prose."
+    )

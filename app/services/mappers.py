@@ -20,6 +20,7 @@ def employee_to_profile(row: Employee, entitlement_ids: list[str]) -> EmployeePr
         job_level=row.job_level,
         location=row.location,
         manager_id=row.manager_id,
+        manager_external_id=row.manager_external_id,
         cost_center=row.cost_center,
         start_date=row.start_date,
         employment_status=EmploymentStatus(row.employment_status),

@@ -106,6 +106,7 @@ curl -s localhost:8000/api/v1/health | python3 -m json.tool
 | http://localhost:8000/docs | Swagger UI — clickable, good for demos |
 | http://localhost:8000/redoc | ReDoc |
 | http://localhost:8000/mcp/ | MCP over Streamable HTTP |
+| `POST /api/v1/chat` | Ask questions about the data (needs an LLM; see §3 Option E) |
 
 ---
 
@@ -137,8 +138,8 @@ Drop it when you want to see the machinery.
 | Joiner | Shows | Talking point |
 |---|---|---|
 | `NJ1001` Rahul Sharma | 5 exact peers, clean | **The client's own worked example**, reproduced exactly: 100 / 100 / 80 / 20% |
-| `NJ1007` Suresh Iyer | **Two human-review holds** | `AUDIT_TOOL` (75) trips their POL005; `SHAREPOINT_AUDIT` is unscored and fails *closed* at 100 |
-| `NJ1006` Neha Singh | Thin peer group + boundary | One peer → confidence 0.6175, flagged insufficient; `RSA_GRC` scores exactly 70 and trips POL005 |
+| `NJ1007` Suresh Iyer | **All three routing outcomes in one run** | `POWERBI_AUDIT` (10) auto-ticketed; `AUDIT_TOOL` (75) → manager; unscored `SHAREPOINT_AUDIT` fails *closed* at 100 → withheld |
+| `NJ1006` Neha Singh | Thin peer group + band boundary | One peer → confidence 0.6175, flagged insufficient; `RSA_GRC` scores exactly 70, the inclusive floor of HIGH → manager |
 | `NJ1010` Arjun Patel | **Fallback peer matching** | Senior Financial Analyst — nobody shares the role *or* the level, so it relaxes all the way to department; confidence 0.8075 → 0.4675 |
 | `NJ1008` Deepa Joseph | **No peer group at all** | No HR identities exist, so it recommends *nothing* rather than inventing something |
 | `NJ1004` Anjali Rao | Small clean group | `CONFLUENCE_USER` at 66.67% falls below the 70% threshold — the cutoff doing real work |
@@ -147,11 +148,11 @@ Drop it when you want to see the machinery.
 `NJ1007` (it fails closed on an entitlement nobody scored) → `NJ1008` (it
 declines to guess). That arc shows recommendation, caution and honesty.
 
-> **Know before you demo:** nothing in the client's extract can reach `BLOCKED`
-> or `MANAGER_APPROVAL`. Their only policies are two risk thresholds that both
-> map to human review, and no identity holds either side of an SoD pair — so
-> those controls are correct but inert against this data. If someone asks to see
-> an SoD block, use the engine directly (§6) rather than a joiner analysis.
+> **Know before you demo:** nothing in the client's extract can reach
+> `BLOCKED` — no identity holds either side of an SoD pair, and they supplied no
+> blocking policies. That control is correct but inert against this data. If
+> someone asks to see an SoD block, drive the engine directly (§6) rather than a
+> joiner analysis.
 
 ### Option B — live over the API
 
@@ -211,6 +212,37 @@ async def main():
 asyncio.run(main())
 EOF
 ```
+
+### Option E — the chatbot
+
+Answers questions about the data by generating a read-only query. Needs an LLM
+configured (`503` otherwise).
+
+```bash
+curl -s -X POST localhost:8000/api/v1/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"question": "Can EMP001 access SAP ECC?"}' | python3 -m json.tool
+```
+
+Questions that demo well, because the answer is checkable against the data:
+
+| Question | Why it lands |
+|---|---|
+| "Can EMP001 access SAP ECC?" | Two entitlements come back, both named |
+| "Who has AD_DOMAIN_ADMIN?" | Nobody does — it answers "no matching record" rather than inventing someone |
+| "Which entitlements have a risk score of 70 or more?" | Six rows, checkable against `entitlement_risk_scores` |
+| "Which joiners have no manager in the system?" | Exercises the `manager_id` / `manager_external_id` split |
+
+Every response carries the `sql` it ran and the `rows` behind the answer, which
+is the thing to point at when someone asks whether it is making things up.
+
+**Say this out loud in a demo:** the chatbot *reports*, it does not *decide*.
+Access decisions come from the deterministic engine; chat reads what that engine
+already concluded. Asking "can X access Y?" returns a statement of record, not a
+new authorisation.
+
+If it answers oddly, check the generated SQL first — that is almost always where
+the problem is, and it is in the response.
 
 ---
 
@@ -467,6 +499,9 @@ Run `--reset` before a demo so the dashboard numbers start clean.
 | `NJ1008` returns nothing and status `FAILED` | Correct behaviour — no HR identities exist to learn from | Nothing to fix; this is the honest case |
 | Demo hangs for minutes, `503 UNAVAILABLE` / `504 DEADLINE_EXCEEDED` | `DEMO_MODE=false` and the LLM provider is throttling | Set `DEMO_MODE=true`. The decisions are identical either way — only the prose changes |
 | `API_KEY_INVALID` **after** you fixed the key in `.env` | The running process still holds the old one — see below | Restart the server |
+| `429 RESOURCE_EXHAUSTED` | Gemini free tier allows only **20 requests/day/model**; one analysis spends ~5 | Set `CHAT_LLM_MODEL` to a different model (separate quota), or use `DEMO_MODE=true` for workflow demos |
+| `/api/v1/chat` returns `503 chat_unavailable` | No LLM configured. The governance workflow does not need one; chat does | Set `LLM_PROVIDER`, `LLM_API_KEY`, `DEMO_MODE=false` |
+| Chat answers "the generated query was rejected as unsafe" | The model emitted something the guard refused; `error` says exactly what | Usually a truncated query — check `LLM_MAX_TOKENS`, or switch `CHAT_LLM_MODEL` to a non-reasoning model |
 | Seed counts look short (e.g. 10 risk scores, not 15) | `seed/*.json` is stale or was partially written | `python scripts/convert_client_csv.py --check`, then re-run it without `--check` |
 | `404 employee_not_found` | Wrong id | `curl localhost:8000/api/v1/joiners` for valid ids |
 | `502` / `mcp_tool_error` | MCP transport problem | Try `MCP_CLIENT_MODE=direct` to confirm |

@@ -14,9 +14,12 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.routes import access_requests, analyses, dashboard, health, joiners
+from app.api.routes import access_requests, analyses, chat, dashboard, health, joiners
 from app.config import get_settings
 from app.db.session import check_database_health, dispose_engine
+from app.services.chat_service import ChatUnavailableError
+from app.services.readonly_query import QueryExecutionError
+from app.services.sql_guard import UnsafeSqlError
 from app.domain.exceptions import (
     AnalysisNotFoundError,
     DomainError,
@@ -61,6 +64,11 @@ _ERROR_STATUS: dict[type[DomainError], int] = {
     McpToolError: status.HTTP_502_BAD_GATEWAY,
     LlmError: status.HTTP_503_SERVICE_UNAVAILABLE,
     WorkflowError: status.HTTP_500_INTERNAL_SERVER_ERROR,
+    # Chat: a rejected or failed query is the caller's problem (400); a missing
+    # LLM is the deployment's (503), and is retryable once one is configured.
+    UnsafeSqlError: status.HTTP_400_BAD_REQUEST,
+    QueryExecutionError: status.HTTP_400_BAD_REQUEST,
+    ChatUnavailableError: status.HTTP_503_SERVICE_UNAVAILABLE,
 }
 
 
@@ -209,6 +217,7 @@ def create_app() -> FastAPI:
     app.include_router(analyses.router, prefix=prefix)
     app.include_router(access_requests.router, prefix=prefix)
     app.include_router(dashboard.router, prefix=prefix)
+    app.include_router(chat.router, prefix=prefix)
 
     @app.get("/", include_in_schema=False)
     def root() -> dict[str, str]:

@@ -22,6 +22,12 @@ class Employee(Base):
     manager_id: Mapped[str | None] = mapped_column(
         String(64), ForeignKey("employees.employee_id", ondelete="SET NULL"), nullable=True
     )
+    # The manager as the *source system* names them, with no foreign key. The
+    # client's joiner extract carries ids like `MGR100` that are not identities
+    # in their own identity extract, so they can never satisfy `manager_id`.
+    # Discarding them would leave manager-tier approvals with nobody to route
+    # to, which is the one thing that tier has to know.
+    manager_external_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     cost_center: Mapped[str | None] = mapped_column(String(64), nullable=True)
     start_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     employment_status: Mapped[str] = mapped_column(String(32), nullable=False)

@@ -172,8 +172,19 @@ class LangChainLLMService(LLMService):
             # Gemma models served through the Gemini API reject the system role,
             # so the instructions are folded into the single user turn.
             messages = [HumanMessage(content=f"{system_prompt}\n\n---\n\n{instruction}")]
+
+        # Callers that need a larger budget than the configured default must be
+        # able to ask for one. Reasoning models spend part of this allowance on
+        # internal thinking before emitting a token of the answer, so a caller
+        # producing structured output (SQL) can be truncated mid-statement at a
+        # limit that is generous for prose.
+        overrides: dict[str, Any] = {}
+        if max_tokens is not None:
+            key = "max_output_tokens" if self.settings.llm_provider == "google" else "max_tokens"
+            overrides[key] = max_tokens
+
         try:
-            response = client.invoke(messages)
+            response = client.invoke(messages, **overrides)
         except Exception as exc:
             logger.warning("llm.invoke_failed", error=str(exc), provider=self.settings.llm_provider)
             raise LlmError(f"LLM invocation failed: {exc}") from exc
